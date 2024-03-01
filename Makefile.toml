@@ -6,6 +6,7 @@ CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = [
 ]
 
 [tasks.run-perseus-todo]
+category = "workspace"
 command = "perseus"
 args = ["serve", "-w"]
 description = "Run perseus todo app"
