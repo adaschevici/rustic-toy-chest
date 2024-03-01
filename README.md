@@ -3,9 +3,9 @@
 ## Projects
 
 - [x] Todo list using perseus and axum
-- [] Todo list using leptos and tailwind and axum
-- [] Next up: a quasi prod rest api with axum and diesel
-- [] ...
+- [ ] Todo list using leptos and tailwind and axum
+- [ ] Next up: a quasi prod rest api with axum and diesel
+- [ ] ...
 
 ## How to run:
 
