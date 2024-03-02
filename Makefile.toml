@@ -2,7 +2,8 @@
 
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = [
-  "perseus_todo"
+  "perseus_todo",
+  "leptos-todo",
 ]
 
 [tasks.run-perseus-todo]
@@ -10,3 +11,9 @@ category = "workspace"
 command = "perseus"
 args = ["serve", "-w"]
 description = "Run perseus todo app"
+
+[tasks.run-leptos-todo]
+category = "workspace"
+command = "cargo"
+args = ["leptos", "watch"]
+description = "Run leptos todo app"
