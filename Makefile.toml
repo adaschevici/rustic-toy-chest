@@ -4,16 +4,30 @@ CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = [
   "perseus_todo",
   "leptos-todo",
+  "quasi-prod-rust-api",
 ]
 
 [tasks.run-perseus-todo]
+workspace = false
 category = "workspace"
 command = "perseus"
 args = ["serve", "-w"]
 description = "Run perseus todo app"
 
 [tasks.run-leptos-todo]
+workspace = false
 category = "workspace"
 command = "cargo"
 args = ["leptos", "watch"]
 description = "Run leptos todo app"
+
+
+
+[tasks.run-quasi-prod-rust-api]
+workspace = false
+category = "workspace"
+
+command = "cargo"
+args = ["run", "-p", "quasi-prod-rust-api"]
+description = "Run quasi prod rust api"
+
