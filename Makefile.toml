@@ -31,3 +31,10 @@ command = "cargo"
 args = ["run", "-p", "quasi-prod-rust-api"]
 description = "Run quasi prod rust api"
 
+[tasks.test-quasi-prod-rust-api]
+workspace = false
+category = "workspace"
+
+command = "cargo"
+args = ["test", "-p", "quasi-prod-rust-api"]
+description = "Run quasi prod rust api"
