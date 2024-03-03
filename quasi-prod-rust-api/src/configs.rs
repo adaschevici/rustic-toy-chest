@@ -71,5 +71,16 @@ mod test {
     fn test_configurations() {
         let config = Configurations::new().unwrap();
         assert_eq!(config.environment, "development");
+        assert_eq!(config.database.host, "localhost");
+        assert_eq!(config.database.name, "tododb");
+        assert_eq!(config.database.user, "todouser");
+        assert_eq!(config.database.password, "todopassword");
+        assert_eq!(config.database.port, 5432);
+        assert_eq!(config.logger.level, "DEBUG");
+        assert_eq!(config.tracing.host, "http://localhost:4317");
+        assert_eq!(config.server.host, "0.0.0.0");
+        assert_eq!(config.server.port, 8080);
+        assert_eq!(config.service.name, "todoservice");
+        assert_eq!(config.service.version, "1.0.0");
     }
 }
