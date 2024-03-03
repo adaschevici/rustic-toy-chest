@@ -1,0 +1,24 @@
+{
+  "environment": "development",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8080
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "name": "tododb",
+    "user": "todouser",
+    "password": "todopassword"
+  },
+  "logger": {
+    "level": "DEBUG"
+  },
+  "tracing": {
+    "host": "http://localhost:4317"
+  },
+  "service": {
+    "name": "todoservice",
+    "version": "1.0.0"
+  }
+}
