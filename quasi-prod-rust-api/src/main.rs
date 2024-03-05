@@ -5,10 +5,13 @@ use tracing::info;
 
 mod app;
 mod configs;
+mod database;
+mod models;
 
 #[tokio::main]
 async fn main() {
     let config = Configurations::new().expect("Failed to read configuration.");
+    let app = app::create_app(config.clone());
     let address: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
         .parse()
         .expect("Failed to bind address");
