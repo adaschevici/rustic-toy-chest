@@ -1,4 +1,5 @@
 use crate::database::AppState;
+use crate::models::Todo;
 use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::{
@@ -8,7 +9,7 @@ use axum::{
 };
 use std::sync::Arc;
 use tower_http::trace::TraceLayer;
-use tracing::instrument;
+use tracing::{info, instrument};
 
 pub fn create_app(state: AppState) -> Router {
     Router::new()
@@ -25,12 +26,25 @@ pub fn create_app(state: AppState) -> Router {
 #[instrument]
 async fn get_todo(
     state: State<Arc<AppState>>,
-    Path(todo_id): Path<String>,
+    Path(todo_id): Path<i32>,
 ) -> Result<Json<Todo>, (StatusCode, String)> {
-    let todo_id = todo_id.parse().map_err(|_| StatusCode::BAD_REQUEST)?;
-    let todo = state
-        .get_todo_by_id(todo_id)
+    let mut conn = state.pool.get().await.map_err(|_| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Failed to get connection from the pool.".to_string(),
+        )
+    })?;
+    info!("Retrieving Todo record from the db: id: {}", &todo_id);
+    let todo = todos::dsl::todos
+        .find(todo_id)
+        .select(Todo::as_select())
+        .first(&mut conn)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|_| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Todo with id: {} not found.", todo_id),
+            )
+        })?;
     Ok(Json(todo))
 }

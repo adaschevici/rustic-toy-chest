@@ -7,6 +7,7 @@ mod app;
 mod configs;
 mod database;
 mod models;
+mod schema;
 
 #[tokio::main]
 async fn main() {
