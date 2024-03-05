@@ -1,6 +1,7 @@
 use config::{Config, ConfigError, Environment, File};
 use serde::Deserialize;
 use std::{env, fmt};
+use temp_env;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Server {
@@ -82,5 +83,33 @@ mod test {
         assert_eq!(config.server.port, 8080);
         assert_eq!(config.service.name, "todoservice");
         assert_eq!(config.service.version, "1.0.0");
+    }
+
+    #[test]
+    fn test_load_production() {
+        temp_env::with_vars([("ENV", Some("production"))], || {
+            let config = Configurations::new().unwrap();
+            assert_eq!(config.environment, "production");
+            assert_eq!(config.database.host, "localhost");
+            assert_eq!(config.database.name, "tododb");
+            assert_eq!(config.database.user, "todouser");
+            assert_eq!(config.database.password, "todopassword");
+            assert_eq!(config.database.port, 5432);
+            assert_eq!(config.logger.level, "INFO");
+            assert_eq!(config.tracing.host, "http://localhost:4317");
+            assert_eq!(config.server.host, "0.0.0.0");
+            assert_eq!(config.server.port, 8080);
+            assert_eq!(config.service.name, "todoservice");
+            assert_eq!(config.service.version, "1.0.0");
+        });
+    }
+    #[test]
+    fn test_override_port() {
+        temp_env::with_vars([("PORT", Some("8899"))], || {
+            let actual = Configurations::new().unwrap();
+            assert_eq!(actual.environment, "development");
+            assert_eq!(actual.server.port, 8899);
+            assert_eq!(actual.logger.level, "DEBUG");
+        });
     }
 }

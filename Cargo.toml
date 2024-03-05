@@ -4,4 +4,5 @@ resolver = "2"
 members = [
   "perseus_todo",
   "leptos-todo",
+  "quasi-prod-rust-api",
 ]
