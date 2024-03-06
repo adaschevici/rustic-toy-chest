@@ -5,8 +5,9 @@ edition = "2021"
 
 [dependencies]
 axum = "0.7.4"
+axum-server = { version = "0.6.0", features = ["tls-rustls"] }
 config = "0.14.0"
-diesel = { version = "2.1.4", features = ["postgres_backend"] }
+diesel = { version = "2.1.4", features = ["postgres_backend", "r2d2", "postgres"] }
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.114"
 temp-env = "0.3.6"

@@ -1,6 +1,8 @@
+use crate::configs::Configurations;
 use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool};
 
+#[derive(Debug)]
 pub struct AppState {
     pub pool: Pool<ConnectionManager<PgConnection>>,
 }
@@ -20,11 +22,11 @@ pub fn get_connection_pool(config: &Configurations) -> AppState {
 fn get_database_url(config: &Configurations) -> String {
     format!(
         "postgres://{}:{}@{}:{}/{}",
-        config.database.username,
+        config.database.user,
         config.database.password,
         config.database.host,
         config.database.port,
-        config.database.dbname
+        config.database.name
     )
 }
 
@@ -47,8 +49,8 @@ mod test {
             database: Database {
                 host: "localhost".to_string(),
                 port: 1234,
-                dbname: "db".to_string(),
-                username: "user".to_string(),
+                name: "db".to_string(),
+                user: "user".to_string(),
                 password: "password".to_string(),
             },
             service: Service {
@@ -58,17 +60,18 @@ mod test {
             tracing: Tracing {
                 host: "localhost".to_string(),
             },
+            environment: "development".to_string(),
         };
         let url = get_database_url(&config);
         assert_eq!(
             url,
             format!(
                 "postgres://{}:{}@{}:{}/{}",
-                config.database.username,
+                config.database.user,
                 config.database.password,
                 config.database.host,
                 config.database.port,
-                config.database.dbname
+                config.database.name
             )
         );
     }

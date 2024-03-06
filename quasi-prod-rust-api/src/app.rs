@@ -1,5 +1,8 @@
 use crate::database::AppState;
-use crate::models::Todo;
+use crate::models::{NewTodo, Todo};
+use crate::schema::todos;
+// use crate::schema::todos;
+// use crate::schema::todos::id;
 use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::{
@@ -7,6 +10,8 @@ use axum::{
     routing::{delete, get, post, put},
     Json, Router,
 };
+use diesel::prelude::*;
+// use diesel::RunQueryDsl;
 use std::sync::Arc;
 use tower_http::trace::TraceLayer;
 use tracing::{info, instrument};
@@ -28,7 +33,7 @@ async fn get_todo(
     state: State<Arc<AppState>>,
     Path(todo_id): Path<i32>,
 ) -> Result<Json<Todo>, (StatusCode, String)> {
-    let mut conn = state.pool.get().await.map_err(|_| {
+    let mut conn = state.pool.get().map_err(|_| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             "Failed to get connection from the pool.".to_string(),
@@ -39,7 +44,6 @@ async fn get_todo(
         .find(todo_id)
         .select(Todo::as_select())
         .first(&mut conn)
-        .await
         .map_err(|_| {
             (
                 StatusCode::NOT_FOUND,

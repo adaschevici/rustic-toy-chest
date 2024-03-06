@@ -11,7 +11,7 @@ pub struct Todo {
     pub completed: bool,
 }
 
-#[derive(Insertable, Deserialize, AsChangeset, Debug)]
+#[derive(Insertable, Deserialize, Debug)]
 #[diesel(table_name = crate::schema::todos)]
 pub struct NewTodo {
     pub title: String,
