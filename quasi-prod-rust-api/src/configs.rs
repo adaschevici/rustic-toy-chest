@@ -1,7 +1,6 @@
 use config::{Config, ConfigError, Environment, File};
 use serde::Deserialize;
-use std::{env, fmt};
-use temp_env;
+use std::env;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Server {

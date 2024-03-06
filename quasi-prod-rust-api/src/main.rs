@@ -1,4 +1,5 @@
 use configs::Configurations;
+use opentelemetry::global::shutdown_tracer_provider;
 use std::net::SocketAddr;
 use tokio::signal;
 use tracing::info;
@@ -45,6 +46,7 @@ async fn shutdown_signal() {
     #[cfg(not(unix))]
     let terminate = std::future::pending::<()>();
 
+    shutdown_tracer_provider();
     tokio::select! {
         _ = ctrl_c => {},
         _ = terminate => {},
