@@ -5,4 +5,5 @@ members = [
   "perseus_todo",
   "leptos-todo",
   "quasi-prod-rust-api",
+  "tanti-srch",
 ]
