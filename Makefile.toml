@@ -38,3 +38,12 @@ category = "workspace"
 command = "cargo"
 args = ["test", "-p", "quasi-prod-rust-api"]
 description = "Run quasi prod rust api"
+
+
+[tasks.run-tanti-srch]
+workspace = false
+category = "workspace"
+
+command = "cargo"
+args = ["run", "-p", "tanti-srch"]
+description = "Run tanti-srch"

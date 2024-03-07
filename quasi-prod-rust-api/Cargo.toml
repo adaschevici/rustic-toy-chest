@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 axum = "0.7.4"
-axum-server = { version = "0.6.0", features = ["tls-rustls"] }
 config = "0.14.0"
 diesel = { version = "2.1.4", features = ["postgres_backend", "r2d2", "postgres"] }
 opentelemetry = "0.22.0"
