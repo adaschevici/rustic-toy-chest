@@ -22,7 +22,7 @@ fn main() -> tantivy::Result<()> {
     let title = schema.get_field("title").unwrap();
     let body = schema.get_field("body").unwrap();
 
-    let mut old_man_doc = Document::default();
+    let mut old_man_doc = TantivyDocument::default();
     old_man_doc.add_text(title, "The old man and the sea");
     old_man_doc.add_text(
         body,
@@ -30,7 +30,7 @@ fn main() -> tantivy::Result<()> {
          he had gone eighty-four days now without taking a fish.",
     );
 
-    index_writer.add_document(old_man_doc);
+    index_writer.add_document(old_man_doc)?;
 
     index_writer.add_document(doc!(
     title => "Of Mice and Men",
@@ -42,7 +42,7 @@ fn main() -> tantivy::Result<()> {
             fresh and green with every spring, carrying in their lower leaf junctures the \
             debris of the winter’s flooding; and sycamores with mottled, white, recumbent \
             limbs and branches that arch over the pool"
-    ));
+    ))?;
 
     index_writer.add_document(doc!(
     title => "Of Mice and Men",
@@ -54,7 +54,7 @@ fn main() -> tantivy::Result<()> {
             fresh and green with every spring, carrying in their lower leaf junctures the \
             debris of the winter’s flooding; and sycamores with mottled, white, recumbent \
             limbs and branches that arch over the pool"
-    ));
+    ))?;
 
     index_writer.add_document(doc!(
     title => "Frankenstein",
@@ -63,9 +63,38 @@ fn main() -> tantivy::Result<()> {
              enterprise which you have regarded with such evil forebodings.  I arrived here \
              yesterday, and my first task is to assure my dear sister of my welfare and \
              increasing confidence in the success of my undertaking."
-    ));
+    ))?;
 
     index_writer.commit()?;
+
+    let reader = index
+        .reader_builder()
+        .reload_policy(ReloadPolicy::OnCommitWithDelay)
+        .try_into()?;
+
+    let searcher = reader.searcher();
+
+    let query_parser = QueryParser::for_index(&index, vec![title, body]);
+
+    let query = query_parser.parse_query("sea whale")?;
+
+    let top_docs = searcher.search(&query, &TopDocs::with_limit(10))?;
+
+    for (_score, doc_address) in top_docs {
+        let retrieved_doc: TantivyDocument = searcher.doc(doc_address)?;
+        println!("{}", retrieved_doc.to_json(&schema));
+    }
+    let query = query_parser.parse_query("title:sea^20 body:whale^70")?;
+
+    let (_score, doc_address) = searcher
+        .search(&query, &TopDocs::with_limit(1))?
+        .into_iter()
+        .next()
+        .unwrap();
+
+    let explanation = query.explain(&searcher, doc_address)?;
+
+    println!("{}", explanation.to_pretty_json());
 
     Ok(())
 }
