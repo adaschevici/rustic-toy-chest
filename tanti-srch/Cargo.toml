@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+tantivy = { version = "0.21.1", features = ["zstd", "zstd-compression"] }
+tempfile = { version = "3.10.1", features = ["nightly"] }
