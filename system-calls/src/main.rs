@@ -3,8 +3,9 @@ use nix::sys::signal::{signal, SigHandler, SIGINT};
 use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
 use nix::sys::stat::Mode;
 use nix::unistd::Whence;
-use nix::unistd::{close, fork, lseek, read, write, ForkResult};
+use nix::unistd::{close, fork, lseek, pipe, read, write, ForkResult};
 use std::fs::File;
+use std::os::fd::AsRawFd;
 use std::os::unix::io::{FromRawFd, RawFd};
 use std::thread::sleep;
 use std::time::Duration;
@@ -61,6 +62,23 @@ fn main() {
     let _ = read(fd2, buffer).expect("Failed to read from file");
     close(fd2).expect("Failed to close file");
     println!("Read from file: {}", String::from_utf8_lossy(buffer));
+
+    // add pipe functionality
+    let (read_fd, write_fd) = pipe().expect("Failed to create pipe");
+    match unsafe { fork() } {
+        Ok(ForkResult::Child) => {
+            let mut buffer: [u8; 128] = [0; 128];
+            read(read_fd.as_raw_fd(), &mut buffer).expect("Failed to read from pipe");
+            println!("Child read from pipe: {}", String::from_utf8_lossy(&buffer));
+        }
+        Ok(ForkResult::Parent { child, .. }) => {
+            write(write_fd, b"Hello from parent").expect("Failed to write to pipe");
+            println!("Hello from parent process. Child pid: {}", child);
+        }
+        Err(_) => {
+            println!("Fork failed");
+        }
+    }
 
     // add a signal and handler
     unsafe {
