@@ -47,3 +47,11 @@ category = "workspace"
 command = "cargo"
 args = ["run", "-p", "tanti-srch"]
 description = "Run tanti-srch"
+
+[tasks.run-system-calls]
+workspace = false
+category = "workspace"
+
+command = "cargo"
+args = ["run", "-p", "system-calls"]
+description = "Run system-calls"
