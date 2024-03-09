@@ -1,9 +1,11 @@
 use nix::fcntl::{open, OFlag};
+use nix::libc;
 use nix::sys::signal::{signal, SigHandler, SIGINT};
 use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
 use nix::sys::stat::Mode;
 use nix::unistd::Whence;
-use nix::unistd::{close, fork, lseek, pipe, read, write, ForkResult};
+use nix::unistd::{close, fork, getgid, getuid, lseek, pipe, read, write, ForkResult};
+use std::ffi::CString;
 use std::fs::File;
 use std::os::fd::AsRawFd;
 use std::os::unix::io::{FromRawFd, RawFd};
@@ -79,7 +81,24 @@ fn main() {
             println!("Fork failed");
         }
     }
-
+    // get user and group id
+    let user_id = getuid();
+    let group_id = getgid();
+    println!("Current user ID: {}", user_id);
+    println!("Current group ID: {}", group_id);
+    // print out PATH env variable
+    unsafe {
+        let name = CString::new("PATH").expect("Failed to create CString");
+        let value = libc::getenv(name.as_ptr());
+        if !value.is_null() {
+            let value_str = std::ffi::CStr::from_ptr(value)
+                .to_string_lossy()
+                .into_owned();
+            println!("PATH: {}", value_str);
+        } else {
+            println!("PATH variable not found");
+        }
+    }
     // add a signal and handler
     unsafe {
         signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
