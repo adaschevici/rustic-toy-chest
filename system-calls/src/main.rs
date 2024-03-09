@@ -1,10 +1,18 @@
 use nix::fcntl::{open, OFlag};
+use nix::sys::signal::{signal, SigHandler, SIGINT};
 use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
 use nix::sys::stat::Mode;
 use nix::unistd::Whence;
 use nix::unistd::{close, fork, lseek, read, write, ForkResult};
 use std::fs::File;
 use std::os::unix::io::{FromRawFd, RawFd};
+use std::thread::sleep;
+use std::time::Duration;
+
+extern "C" fn sigint_handler(_: i32) {
+    println!("Received SIGINT, exiting...");
+    std::process::exit(0);
+}
 
 fn main() {
     // TODO: Add error handling and a CLI interface using inquirer-rs and clap
@@ -53,4 +61,13 @@ fn main() {
     let _ = read(fd2, buffer).expect("Failed to read from file");
     close(fd2).expect("Failed to close file");
     println!("Read from file: {}", String::from_utf8_lossy(buffer));
+
+    // add a signal and handler
+    unsafe {
+        signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
+    }
+    loop {
+        println!("Running...Press Ctrl+C to exit");
+        sleep(Duration::from_secs(5));
+    }
 }
