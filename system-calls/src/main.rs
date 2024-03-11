@@ -2,6 +2,7 @@ use nix::fcntl::{open, OFlag};
 use nix::libc;
 use nix::sys::signal::{signal, SigHandler, SIGINT};
 use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
+use nix::sys::stat::fchmod as chmod;
 use nix::sys::stat::Mode;
 use nix::unistd::Whence;
 use nix::unistd::{close, fork, getgid, getuid, lseek, pipe, read, write, ForkResult};
@@ -99,6 +100,16 @@ fn main() {
             println!("PATH variable not found");
         }
     }
+    // setting file permissions
+    let path = "nix_tmp.txt";
+    let fd2: RawFd = open(
+        path,
+        OFlag::O_RDWR | OFlag::O_CREAT,
+        Mode::S_IRUSR | Mode::S_IWUSR,
+    )
+    .expect("Failed to open file");
+    chmod(fd2, Mode::S_IRUSR | Mode::S_IWUSR).expect("Failed to change file permissions");
+    println!("File permissions changed");
     // add a signal and handler
     unsafe {
         signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
