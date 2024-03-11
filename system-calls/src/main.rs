@@ -9,6 +9,7 @@ use nix::unistd::gethostname;
 use nix::unistd::Whence;
 use nix::unistd::{chdir, getcwd};
 use nix::unistd::{close, fork, getgid, getuid, lseek, pipe, read, write, ForkResult};
+use nix::unistd::{getpid, setsid};
 use std::ffi::CString;
 use std::ffi::OsString;
 use std::fs::File;
@@ -135,6 +136,17 @@ fn main() {
     chdir("/tmp").expect("Failed to change directory");
     let new_path = getcwd().expect("Failed to get current working directory");
     println!("New working directory: {:?}", new_path.to_string_lossy());
+    // process sessions starting
+    println!("Current process ID: {:?}", getpid());
+    // this will continue running so I am commenting it out for now
+    //    match setsid() {
+    //        Ok(session_id) => {
+    //            println!("Started a new session with ID: {:?}", session_id);
+    //        }
+    //        Err(e) => {
+    //            eprintln!("Failed to start a new session: {}", e);
+    //        }
+    //    }
     // add a signal and handler
     unsafe {
         signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
