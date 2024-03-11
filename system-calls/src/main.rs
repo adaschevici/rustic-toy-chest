@@ -1,5 +1,6 @@
 use nix::fcntl::{open, OFlag};
 use nix::libc;
+use nix::poll::{poll, PollFd, PollFlags, PollTimeout};
 use nix::sys::resource::{getrlimit, setrlimit, Resource};
 use nix::sys::signal::{signal, SigHandler, SIGINT};
 use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
@@ -13,8 +14,9 @@ use nix::unistd::{getpid, setsid};
 use std::ffi::CString;
 use std::ffi::OsString;
 use std::fs::File;
-use std::os::fd::AsRawFd;
+use std::os::fd::{AsFd, AsRawFd};
 use std::os::unix::io::{FromRawFd, RawFd};
+use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -147,6 +149,21 @@ fn main() {
     //            eprintln!("Failed to start a new session: {}", e);
     //        }
     //    }
+    let (read_fd, write_fd) = pipe().expect("Failed to create pipe");
+    thread::spawn(move || {
+        thread::sleep(Duration::from_secs(2));
+        write(write_fd, b"Hello from awesome child").expect("Failed to write to pipe");
+    });
+    let mut fds = [PollFd::new(read_fd.as_fd(), PollFlags::POLLIN)];
+    poll(&mut fds, PollTimeout::from(5000_u16)).expect("Failed to poll");
+    if fds[0].revents().unwrap().contains(PollFlags::POLLIN) {
+        let mut buffer: [u8; 128] = [0; 128];
+        let _ = read(read_fd.as_raw_fd(), &mut buffer).expect("Failed to read from pipe");
+        println!(
+            "Parent read from pipe: {}",
+            String::from_utf8_lossy(&buffer)
+        );
+    }
     // add a signal and handler
     unsafe {
         signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
