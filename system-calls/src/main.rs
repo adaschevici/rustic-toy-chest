@@ -7,6 +7,7 @@ use nix::sys::stat::fchmod as chmod;
 use nix::sys::stat::Mode;
 use nix::unistd::gethostname;
 use nix::unistd::Whence;
+use nix::unistd::{chdir, getcwd};
 use nix::unistd::{close, fork, getgid, getuid, lseek, pipe, read, write, ForkResult};
 use std::ffi::CString;
 use std::ffi::OsString;
@@ -125,6 +126,15 @@ fn main() {
         soft_limit, hard_limit
     );
     setrlimit(Resource::RLIMIT_NOFILE, 1024, hard_limit).expect("Failed to set resource limits");
+    // change directory
+    let initial_path = getcwd().expect("Failed to get current working directory");
+    println!(
+        "Initial working directory: {:?}",
+        initial_path.to_string_lossy()
+    );
+    chdir("/tmp").expect("Failed to change directory");
+    let new_path = getcwd().expect("Failed to get current working directory");
+    println!("New working directory: {:?}", new_path.to_string_lossy());
     // add a signal and handler
     unsafe {
         signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
