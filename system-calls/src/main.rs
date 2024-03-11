@@ -1,12 +1,14 @@
 use nix::fcntl::{open, OFlag};
 use nix::libc;
+// use nix::mount::{mount, unmount, MsFlags};
 use nix::poll::{poll, PollFd, PollFlags, PollTimeout};
 use nix::sys::resource::{getrlimit, setrlimit, Resource};
-use nix::sys::signal::{signal, SigHandler, SIGINT};
+use nix::sys::signal::{kill, signal, SigHandler, SIGINT, SIGTERM};
 use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
 use nix::sys::stat::fchmod as chmod;
 use nix::sys::stat::Mode;
 use nix::unistd::gethostname;
+use nix::unistd::Pid;
 use nix::unistd::Whence;
 use nix::unistd::{chdir, getcwd};
 use nix::unistd::{close, fork, getgid, getuid, lseek, pipe, read, write, ForkResult};
@@ -164,6 +166,18 @@ fn main() {
             String::from_utf8_lossy(&buffer)
         );
     }
+    // mount and unmount usb drive
+    // not working on mac
+    //     let source = Some("/dev/disk4");
+    //     let target = "/mnt/usbdrive";
+    //     let fstype = "exfat";
+    //     let flags = MsFlags::empty();
+    //     let data = None;
+    //     mount(source, target, Some(fstype), flags, data).expect("Failed to mount usb drive");
+    //     unmount(target, flags).expect("Failed to unmount usb drive");
+    // Terminate process by pid
+    //    let target_pid = Pid::from_raw(7518);
+    //    kill(target_pid, SIGTERM).expect("Failed to terminate process");
     // add a signal and handler
     unsafe {
         signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
