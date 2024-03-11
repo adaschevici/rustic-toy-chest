@@ -1,5 +1,6 @@
 use nix::fcntl::{open, OFlag};
 use nix::libc;
+use nix::sys::resource::{getrlimit, setrlimit, Resource};
 use nix::sys::signal::{signal, SigHandler, SIGINT};
 use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
 use nix::sys::stat::fchmod as chmod;
@@ -116,6 +117,14 @@ fn main() {
     // get hostname
     let hostname: OsString = gethostname().expect("Failed to get hostname");
     println!("Hostname: {}", hostname.to_string_lossy());
+    // get and set resource limits
+    let (soft_limit, hard_limit) =
+        getrlimit(Resource::RLIMIT_NOFILE).expect("Failed to get resource limits");
+    println!(
+        "File descriptor limits: soft: {}, hard: {}",
+        soft_limit, hard_limit
+    );
+    setrlimit(Resource::RLIMIT_NOFILE, 1024, hard_limit).expect("Failed to set resource limits");
     // add a signal and handler
     unsafe {
         signal(SIGINT, SigHandler::Handler(sigint_handler)).expect("Failed to add signal handler");
