@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  
+  todoservice:
+    container_name: todoservice
+    profiles: ["service"]
+    build: .
+    ports:
+      - 8090:8080
+    depends_on:
+      - db
+      - jaeger
+  
+  db:
+    container_name: db
+    image: postgres:latest
+    profiles: ["infra"]
+    restart: always
+    ports:
+        - 5432:5432
+    environment:
+      POSTGRES_USER: "todouser"
+      POSTGRES_PASSWORD: "todopassword"
+      POSTGRES_DB: "tododb"
+
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    profiles: ["tracing"]
+    ports:
+      - 16686:16686
+      - 4317:4317
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - LOG_LEVEL=debug
