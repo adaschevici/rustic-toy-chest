@@ -1,7 +1,7 @@
 use configs::Configurations;
 use opentelemetry::global::shutdown_tracer_provider;
 use opentelemetry::{trace::TraceError, KeyValue};
-use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_otlp::{ExportConfig, WithExportConfig};
 use opentelemetry_sdk::{runtime, trace as sdktrace, Resource};
 use std::net::SocketAddr;
 use tokio::signal;
@@ -15,20 +15,22 @@ mod models;
 mod schema;
 
 fn init_tracer(config: &Configurations) -> Result<opentelemetry_sdk::trace::Tracer, TraceError> {
-    info!("Service name: {}", config.service.name.clone());
-    let tracer =
-        opentelemetry_otlp::new_pipeline()
-            .tracing()
-            .with_exporter(
-                opentelemetry_otlp::new_exporter()
-                    .tonic()
-                    .with_endpoint(config.tracing.host.clone()),
-            )
-            .with_trace_config(sdktrace::config().with_resource(Resource::new(vec![
-                KeyValue::new("service.name", config.service.name.clone()),
-            ])))
-            .install_batch(runtime::Tokio);
-    tracer
+    println!("Service name: {:?}", config.service.name.clone());
+    println!("Tracing host: {:?}", config.tracing.host.clone());
+    opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(
+            opentelemetry_otlp::new_exporter()
+                .tonic()
+                .with_endpoint(config.tracing.host.clone()),
+        )
+        .with_trace_config(
+            sdktrace::config().with_resource(Resource::new(vec![KeyValue::new(
+                opentelemetry_semantic_conventions::resource::SERVICE_NAME,
+                "trace-service",
+            )])),
+        )
+        .install_batch(runtime::Tokio)
 }
 
 #[tokio::main]
