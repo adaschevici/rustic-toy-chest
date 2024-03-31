@@ -136,6 +136,19 @@ async fn complete_todo(
     Ok(Json(todo))
 }
 
+#[instrument]
+async fn delete_todo(
+    state: State<Arc<AppState>>,
+    Path(todo_id): Path<i32>,
+) -> Result<Json<Todo>, (StatusCode, String)> {
+    let mut conn = state.pool.get().map_err(internal_error)?;
+    info!("Deleting Todo record from the db: id: {}", &todo_id);
+    let todo = diesel::delete(todos::dsl::todos.find(todo_id))
+        .get_result(&mut conn)
+        .map_err(internal_error)?;
+    Ok(Json(todo))
+}
+
 fn internal_error<E>(err: E) -> (StatusCode, String)
 where
     E: std::error::Error,
