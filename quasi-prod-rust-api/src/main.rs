@@ -27,13 +27,6 @@ fn init_tracer(config: &Configurations) -> Result<opentelemetry_sdk::trace::Trac
                 KeyValue::new("service.name", config.service.name.clone()),
             ])))
             .install_batch(runtime::Tokio);
-    // .with_service_name(&config.service.name)
-    // .with_tags(vec![KeyValue::new(
-    //     "version",
-    //     config.service.version.clone(),
-    // )])
-    // .install_batch(opentelemetry::runtime::Tokio)
-    // .expect("Failed to install Jaeger pipeline.");
     tracer
 }
 
