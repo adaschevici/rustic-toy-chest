@@ -19,10 +19,10 @@ use tracing::{info, instrument};
 pub fn create_app(state: AppState) -> Router {
     Router::new()
         .route("/todo/:todo_id", get(get_todo))
-        //        .route("/todo/:todo_id", delete(delete_todo))
+        .route("/todo/:todo_id", delete(delete_todo))
         .route("/todo/:todo_id", put(complete_todo))
         .route("/todo", post(create_todo))
-        //        .route("/todo", get(get_all_todos))
+        .route("/todo", get(get_all_todos))
         .route("/todo/random", post(create_random_todo))
         .with_state(Arc::new(state))
         .layer(TraceLayer::new_for_http())

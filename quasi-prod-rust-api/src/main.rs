@@ -15,6 +15,7 @@ mod models;
 mod schema;
 
 fn init_tracer(config: &Configurations) -> Result<opentelemetry_sdk::trace::Tracer, TraceError> {
+    info!("Service name: {}", config.service.name.clone());
     let tracer =
         opentelemetry_otlp::new_pipeline()
             .tracing()
