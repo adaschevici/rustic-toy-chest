@@ -149,6 +149,19 @@ async fn delete_todo(
     Ok(Json(todo))
 }
 
+#[instrument]
+async fn get_all_todos(
+    state: State<Arc<AppState>>,
+) -> Result<Json<Vec<Todo>>, (StatusCode, String)> {
+    let mut conn = state.pool.get().map_err(internal_error)?;
+    info!("Retrieving all Todo records from the db");
+    let todos = todos::dsl::todos
+        .select(Todo::as_select())
+        .load(&mut conn)
+        .map_err(internal_error)?;
+    Ok(Json(todos))
+}
+
 fn internal_error<E>(err: E) -> (StatusCode, String)
 where
     E: std::error::Error,
