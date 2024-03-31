@@ -20,7 +20,7 @@ pub fn create_app(state: AppState) -> Router {
     Router::new()
         .route("/todo/:todo_id", get(get_todo))
         //        .route("/todo/:todo_id", delete(delete_todo))
-        //        .route("/todo/:todo_id", put(complete_todo))
+        .route("/todo/:todo_id", put(complete_todo))
         .route("/todo", post(create_todo))
         //        .route("/todo", get(get_all_todos))
         .route("/todo/random", post(create_random_todo))
@@ -120,6 +120,20 @@ async fn create_random_todo(
         .get_result(&mut conn)
         .map_err(internal_error)?;
     Ok(Json(res))
+}
+
+#[instrument]
+async fn complete_todo(
+    state: State<Arc<AppState>>,
+    Path(todo_id): Path<i32>,
+) -> Result<Json<Todo>, (StatusCode, String)> {
+    let mut conn = state.pool.get().map_err(internal_error)?;
+    info!("Completing Todo record in the db: id: {}", &todo_id);
+    let todo = diesel::update(todos::dsl::todos.find(todo_id))
+        .set(todos::completed.eq(true))
+        .get_result(&mut conn)
+        .map_err(internal_error)?;
+    Ok(Json(todo))
 }
 
 fn internal_error<E>(err: E) -> (StatusCode, String)
