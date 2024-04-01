@@ -27,7 +27,7 @@ fn init_tracer(config: &Configurations) -> Result<opentelemetry_sdk::trace::Trac
         .with_trace_config(
             sdktrace::config().with_resource(Resource::new(vec![KeyValue::new(
                 opentelemetry_semantic_conventions::resource::SERVICE_NAME,
-                "trace-service",
+                config.service.name.clone(),
             )])),
         )
         .install_batch(runtime::Tokio)
