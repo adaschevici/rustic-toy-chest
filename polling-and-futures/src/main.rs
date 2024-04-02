@@ -13,4 +13,12 @@ fn main() {
     let waker = RawWaker::new(null(), &VTABLE);
 
     let waker = unsafe { Waker::from_raw(waker) };
+
+    let mut cx = Context::from_waker(&waker);
+    let mut task = Box::pin(task);
+
+    match task.as_mut().poll(&mut cx) {
+        Poll::Ready(val) => println!("Ready: {}", val),
+        Poll::Pending => println!("Pending"),
+    }
 }

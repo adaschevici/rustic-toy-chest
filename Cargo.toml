@@ -5,5 +5,5 @@ members = [
   "perseus_todo",
   "leptos-todo",
   "quasi-prod-rust-api",
-  "tanti-srch", "system-calls", "actix-mock-tracing", "async-snippets",
+  "tanti-srch", "system-calls", "actix-mock-tracing", "async-snippets", "polling-and-futures",
 ]
