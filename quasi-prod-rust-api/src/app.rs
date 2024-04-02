@@ -28,7 +28,7 @@ pub fn create_app(state: AppState) -> Router {
         .layer(TraceLayer::new_for_http())
 }
 
-#[instrument]
+#[instrument()]
 async fn create_todo(
     State(state): State<Arc<AppState>>,
     Json(new_todo): Json<NewTodo>,
@@ -52,7 +52,7 @@ async fn create_todo(
     Ok(Json(todo))
 }
 
-#[instrument]
+#[instrument()]
 async fn get_todo(
     state: State<Arc<AppState>>,
     Path(todo_id): Path<i32>,
@@ -84,7 +84,7 @@ pub struct Activity {
     pub activity_type: String,
 }
 
-#[instrument]
+#[instrument()]
 async fn create_random_todo(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<Todo>, (StatusCode, String)> {
@@ -122,7 +122,7 @@ async fn create_random_todo(
     Ok(Json(res))
 }
 
-#[instrument]
+#[instrument()]
 async fn complete_todo(
     state: State<Arc<AppState>>,
     Path(todo_id): Path<i32>,
@@ -136,7 +136,7 @@ async fn complete_todo(
     Ok(Json(todo))
 }
 
-#[instrument]
+#[instrument()]
 async fn delete_todo(
     state: State<Arc<AppState>>,
     Path(todo_id): Path<i32>,
@@ -149,7 +149,7 @@ async fn delete_todo(
     Ok(Json(todo))
 }
 
-#[instrument]
+#[instrument()]
 async fn get_all_todos(
     state: State<Arc<AppState>>,
 ) -> Result<Json<Vec<Todo>>, (StatusCode, String)> {
