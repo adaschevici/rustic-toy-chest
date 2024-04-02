@@ -1,6 +1,8 @@
 use async_std::task;
+use std::cell::Cell;
 use std::future::Future;
 use std::ptr::null;
+use std::rc::Rc;
 use std::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
 use std::time::Duration;
 
@@ -9,6 +11,23 @@ fn noop(_data: *const ()) {}
 
 static VTABLE: RawWakerVTable =
     RawWakerVTable::new(|data| RawWaker::new(data, &VTABLE), wake, wake, noop);
+
+pub struct Resource {
+    value: i32,
+    elapsed: Rc<Cell<u64>>,
+}
+
+impl Resource {
+    pub fn result(&self) -> i32 {
+        self.value
+    }
+}
+
+impl Drop for Resource {
+    fn drop(&mut self) {
+        println!("{:>4} drop", self.elapsed.get());
+    }
+}
 
 fn main() {
     let task = async { 13 };
