@@ -60,4 +60,26 @@ fn main() {
         std::thread::sleep(Duration::from_millis(300));
         elapsed += 300;
     }
+
+    let elapsed = Rc::new(Cell::new(0));
+    let copied = elapsed.clone();
+
+    let task3 = async {
+        let resource = Resource {
+            value: 13,
+            elapsed: copied,
+        };
+        task::sleep(Duration::from_secs(1)).await;
+        resource.result()
+    };
+    let mut cx = Context::from_waker(&waker);
+    let mut task3 = Box::pin(task3);
+    loop {
+        match task3.as_mut().poll(&mut cx) {
+            Poll::Ready(value) => break println!("{:>4} ready {value:?}", elapsed.get()),
+            Poll::Pending => println!("{:>4} pending", elapsed.get()),
+        }
+        std::thread::sleep(Duration::from_millis(300));
+        elapsed.set(elapsed.get() + 300);
+    }
 }
