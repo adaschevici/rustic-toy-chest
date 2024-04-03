@@ -1,11 +1,17 @@
 use futures::future::join_all;
 use rand::Rng;
 use std::collections::HashMap;
+use std::{iter, iter::RepeatWith};
 use tokio::task::JoinHandle;
 
-fn generate_random_number(min: i32, max: i32) -> i32 {
-    let mut rng = rand::thread_rng(); // Get a random number generator.
-    rng.gen_range(min..max) // Generate a random number within the range.
+fn generate_random_delay_urls(min: i32, max: i32) -> RepeatWith<impl FnMut() -> String> {
+    let infinite_url_list = iter::repeat_with(|| {
+        let mut rng = rand::thread_rng(); // Get a random number generator.
+        let random_delay = rng.gen_range(min..max); // Generate a random number within the range.
+        let url = format!("http://localhost:4242/ip?delay={}", random_delay);
+        url
+    });
+    infinite_url_list
 }
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
