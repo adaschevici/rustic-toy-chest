@@ -1,7 +1,12 @@
 use futures::future::join_all;
+use rand::Rng;
 use std::collections::HashMap;
 use tokio::task::JoinHandle;
 
+fn generate_random_number(min: i32, max: i32) -> i32 {
+    let mut rng = rand::thread_rng(); // Get a random number generator.
+    rng.gen_range(min..max) // Generate a random number within the range.
+}
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let paths = vec![
