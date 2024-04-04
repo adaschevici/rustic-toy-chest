@@ -30,6 +30,10 @@ struct JohnShelby;
 
 impl ShelbyWithDefault for JohnShelby {}
 
+fn meet_and_greet(shelby: impl ShelbyWithDefault) {
+    shelby.speak();
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -38,4 +42,6 @@ fn main() {
 
     let john = JohnShelby;
     john.speak();
+    let jon = JohnShelby;
+    meet_and_greet(jon);
 }
