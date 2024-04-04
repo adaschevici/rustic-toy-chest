@@ -34,6 +34,11 @@ fn meet_and_greet(shelby: impl ShelbyWithDefault) {
     shelby.speak();
 }
 
+// Add generics
+struct BusinessPlan<T> {
+    goods: T,
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -44,4 +49,10 @@ fn main() {
     john.speak();
     let jon = JohnShelby;
     meet_and_greet(jon);
+
+    let whiskey_plan = BusinessPlan { goods: "Whiskey" };
+    let amount_plan = BusinessPlan { goods: 100 };
+
+    println!("Business Plan 1: {}", whiskey_plan.goods);
+    println!("Business Plan 2: {}", amount_plan.goods);
 }
