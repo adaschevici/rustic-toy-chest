@@ -57,6 +57,22 @@ fn operate_business<T: Operation>(business: T) {
     business.run();
 }
 
+trait ShelbyGuard {
+    fn protect(&self);
+}
+
+struct ShelbyFootman;
+
+impl ShelbyGuard for ShelbyFootman {
+    fn protect(&self) {
+        println!("I'm a Shelby footman and I protect the family.");
+    }
+}
+
+fn protect_family<T: ShelbyGuard>(guardsman: T) {
+    guardsman.protect();
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -76,4 +92,7 @@ fn main() {
 
     let illegal_business = Illegal { business: "Funk" };
     operate_business(illegal_business);
+
+    let shelby_footman = ShelbyFootman;
+    protect_family(shelby_footman);
 }
