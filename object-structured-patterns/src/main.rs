@@ -73,6 +73,13 @@ fn protect_family<T: ShelbyGuard>(guardsman: T) {
     guardsman.protect();
 }
 
+fn protect_family_differently<T>(guardsman: T)
+where
+    T: ShelbyGuard,
+{
+    guardsman.protect();
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -95,4 +102,6 @@ fn main() {
 
     let shelby_footman = ShelbyFootman;
     protect_family(shelby_footman);
+    let shelby_footman = ShelbyFootman;
+    protect_family_differently(shelby_footman);
 }
