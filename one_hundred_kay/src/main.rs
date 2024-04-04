@@ -1,23 +1,27 @@
 use futures::future::join_all;
 use rand::Rng;
 use std::collections::HashMap;
-use std::{iter, iter::RepeatWith};
+use std::{
+    iter,
+    iter::{FromIterator, RepeatWith, Take},
+};
 use tokio::task::JoinHandle;
 
-fn generate_random_delay_urls(min: i32, max: i32) -> RepeatWith<impl FnMut() -> String> {
+fn generate_random_delay_urls(
+    min: i32,
+    max: i32,
+    limit: usize,
+) -> Take<RepeatWith<impl FnMut() -> String>> {
     iter::repeat_with(move || {
         let mut rng = rand::thread_rng(); // Get a random number generator.
         let random_delay = rng.gen_range(min..max); // Generate a random number within the range.
-        format!("http://localhost:4242/ip?delay={}", random_delay)
+        format!("http://localhost:4242/delay/{}", random_delay)
     })
+    .take(limit)
 }
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let paths = vec![
-        "http://localhost:4242/ip".to_string(),
-        "http://localhost:4242/ip".to_string(),
-        "http://localhost:4242/ip".to_string(),
-    ];
+    let paths = generate_random_delay_urls(1, 10, 10).collect::<Vec<String>>();
     let path = "http://localhost:4242/ip";
     let mut tasks: Vec<JoinHandle<Result<String, reqwest::Error>>> = vec![];
     for path in paths {

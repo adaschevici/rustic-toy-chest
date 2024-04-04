@@ -2810,6 +2810,7 @@ name = "one_hundred_kay"
 version = "0.1.0"
 dependencies = [
  "futures",
+ "rand",
  "reqwest 0.12.2",
  "tokio",
 ]
