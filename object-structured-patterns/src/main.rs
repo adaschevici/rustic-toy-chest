@@ -109,6 +109,28 @@ impl Role for SubWorkhandler {
     }
 }
 
+trait Armorer {
+    fn arm(&self) -> String;
+}
+
+trait IronforgeArmorer: Armorer {
+    fn forge_armor(&self) -> String;
+}
+
+struct Blacksmith;
+
+impl Armorer for Blacksmith {
+    fn arm(&self) -> String {
+        "I'm a blacksmith and I arm the Shelby family.".to_string()
+    }
+}
+
+impl IronforgeArmorer for Blacksmith {
+    fn forge_armor(&self) -> String {
+        "I'm a blacksmith and I forge armor for the Shelby family.".to_string()
+    }
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -138,4 +160,7 @@ fn main() {
 
     wh.perform("Handle work".to_string());
     sub_wh.perform(10);
+
+    let bs = Blacksmith;
+    bs.forge_armor();
 }
