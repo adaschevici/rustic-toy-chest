@@ -1,7 +1,9 @@
 use futures::future::join_all;
 use futures::stream::StreamExt;
 use rand::Rng;
+use reqwest::Client;
 use std::collections::HashMap;
+use std::time::Duration;
 use std::{
     iter,
     iter::{FromIterator, RepeatWith, Take},
@@ -24,16 +26,20 @@ fn generate_random_delay_urls(
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let paths = generate_random_delay_urls(1, 10, 10);
     let path = "http://localhost:4242/ip";
+    let client = Client::builder().timeout(Duration::from_secs(5)).build()?;
     let mut tasks: Vec<JoinHandle<Result<String, reqwest::Error>>> = vec![];
-    let fetches = futures::stream::iter(paths.map(|path| async move {
-        match reqwest::get(&path).await {
-            Ok(response) => match response.text().await {
-                Ok(text) => {
-                    println!("RESPONSE: {} bytes from {}", text.len(), path);
-                }
-                Err(_) => println!("ERROR reading {}", path),
-            },
-            Err(_) => println!("ERROR fetching {}", path),
+    let fetches = futures::stream::iter(paths.map(|path| {
+        let client = client.clone();
+        async move {
+            match client.get(&path).send().await {
+                Ok(response) => match response.text().await {
+                    Ok(text) => {
+                        println!("RESPONSE: {} bytes from {}", text.len(), path);
+                    }
+                    Err(_) => println!("ERROR reading {}", path),
+                },
+                Err(_) => println!("ERROR fetching {}", path),
+            }
         }
     }))
     .buffer_unordered(5)
