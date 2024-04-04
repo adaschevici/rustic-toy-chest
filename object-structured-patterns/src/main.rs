@@ -80,6 +80,35 @@ where
     guardsman.protect();
 }
 
+trait Role {
+    type Duty;
+
+    fn perform(&self, duty: Self::Duty);
+}
+
+struct WorkHandler;
+
+impl Role for WorkHandler {
+    type Duty = String;
+
+    fn perform(&self, duty: Self::Duty) {
+        println!("I'm a work handler and I handle work: {}", duty);
+    }
+}
+
+struct SubWorkhandler;
+
+impl Role for SubWorkhandler {
+    type Duty = i32;
+
+    fn perform(&self, duty: Self::Duty) {
+        println!(
+            "I'm a sub work handler and I handle {} number of tasks",
+            duty
+        );
+    }
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -104,4 +133,9 @@ fn main() {
     protect_family(shelby_footman);
     let shelby_footman = ShelbyFootman;
     protect_family_differently(shelby_footman);
+    let wh = WorkHandler;
+    let sub_wh = SubWorkhandler;
+
+    wh.perform("Handle work".to_string());
+    sub_wh.perform(10);
 }
