@@ -39,6 +39,24 @@ struct BusinessPlan<T> {
     goods: T,
 }
 
+trait Operation {
+    fn run(&self);
+}
+
+struct Illegal<T> {
+    business: T,
+}
+
+impl<T> Operation for Illegal<T> {
+    fn run(&self) {
+        println!("Running an illegal business.");
+    }
+}
+
+fn operate_business<T: Operation>(business: T) {
+    business.run();
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -55,4 +73,7 @@ fn main() {
 
     println!("Business Plan 1: {}", whiskey_plan.goods);
     println!("Business Plan 2: {}", amount_plan.goods);
+
+    let illegal_business = Illegal { business: "Funk" };
+    operate_business(illegal_business);
 }
