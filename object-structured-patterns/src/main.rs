@@ -131,6 +131,20 @@ impl IronforgeArmorer for Blacksmith {
     }
 }
 
+struct ExternalArmorer;
+
+struct LocalArmorer(ExternalArmorer);
+
+trait AdaptedArmorer {
+    fn arm(&self) -> String;
+}
+
+impl AdaptedArmorer for LocalArmorer {
+    fn arm(&self) -> String {
+        "I'm a local armorer and I am adapted to arm the Shelby family.".to_string()
+    }
+}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
@@ -162,5 +176,8 @@ fn main() {
     sub_wh.perform(10);
 
     let bs = Blacksmith;
-    bs.forge_armor();
+    println!("{}", bs.arm());
+
+    let tooler = LocalArmorer(ExternalArmorer);
+    println!("{}", tooler.arm());
 }
