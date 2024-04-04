@@ -20,9 +20,22 @@ impl Shelby for ArthurShelby {
     }
 }
 
+trait ShelbyWithDefault {
+    fn speak(&self) {
+        println!("I'm a Shelby by default so bear with me.");
+    }
+}
+
+struct JohnShelby;
+
+impl ShelbyWithDefault for JohnShelby {}
+
 fn main() {
     let tommy = ThomasShelby;
     let arthur = ArthurShelby;
     tommy.speak();
     arthur.speak();
+
+    let john = JohnShelby;
+    john.speak();
 }
