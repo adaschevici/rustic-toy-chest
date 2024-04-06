@@ -8,6 +8,11 @@ struct User {
     age: u32,
 }
 
+#[derive(Debug)]
+struct Foo {}
+
+impl !Send for Foo {}
+
 fn main() {
     let user = User {
         name: "Alice".to_string(),
@@ -75,4 +80,10 @@ fn main() {
 
     handle_four.join().unwrap();
     handle_five.join().unwrap();
+
+    // let foo_one = Foo {};
+    // let handle_six = spawn(move || {
+    //     dbg!(foo_one);
+    // });
+    // handle_six.join().unwrap();
 }
