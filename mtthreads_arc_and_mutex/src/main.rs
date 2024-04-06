@@ -116,4 +116,21 @@ fn main() {
     });
     handle_eight.join().unwrap();
     handle_nine.join().unwrap();
+
+    let user_six = Mutex::new(User {
+        name: "Frank".to_string(),
+        age: 5,
+    });
+
+    scope(|s| {
+        s.spawn(|_| {
+            user_six.lock().unwrap().name = "Frankk".to_string();
+        });
+
+        s.spawn(|_| {
+            sleep(Duration::from_secs(1));
+            println!("Hello from tenth thread: {:?}", &user_six.lock().unwrap());
+        });
+    })
+    .unwrap();
 }
