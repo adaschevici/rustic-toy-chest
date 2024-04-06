@@ -1,4 +1,5 @@
 use crossbeam::scope;
+use std::sync::Arc;
 use std::thread::spawn;
 
 #[derive(Debug)]
@@ -55,4 +56,23 @@ fn main() {
         });
     })
     .unwrap();
+
+    let user_four_original = Arc::new(User {
+        name: "David".to_string(),
+        age: 15,
+    });
+
+    let user_four = user_four_original.clone();
+
+    let handle_four = spawn(move || {
+        println!("Hello from sixth thread: {:?}", &user_four);
+    });
+
+    let user_four = user_four_original.clone();
+    let handle_five = spawn(move || {
+        println!("Hello from seventh thread: {:?}", &user_four);
+    });
+
+    handle_four.join().unwrap();
+    handle_five.join().unwrap();
 }
