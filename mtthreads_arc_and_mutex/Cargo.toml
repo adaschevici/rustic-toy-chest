@@ -1,0 +1,6 @@
+[package]
+name = "mtthreads_arc_and_mutex"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
