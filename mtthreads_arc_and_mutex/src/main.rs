@@ -1,6 +1,7 @@
 #![feature(negative_impls)]
 use crossbeam::scope;
 use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::thread::{self, sleep, spawn};
 use std::time::Duration;
@@ -16,6 +17,15 @@ struct UserTwo {
     name: RefCell<String>,
     age: Cell<u32>,
 }
+
+#[derive(Debug)]
+struct UserThree {
+    name: Rc<String>,
+    age: u32,
+}
+
+unsafe impl Send for UserThree {}
+unsafe impl Sync for UserThree {}
 
 #[derive(Debug)]
 struct Foo {}
@@ -154,5 +164,38 @@ fn main() {
     // thread::spawn(move || {
     //     user_seven.age.set(55);
     // });
+    // below code still doesn't work even if Rc is both Send and Sync
+    // let foo_three = Rc::new(3);
+    //
+    // let foo_four = foo_three.clone();
+    // thread::spawn(move || {
+    //     dbg!(foo_four);
+    // });
+    //
+    // let foo_four = foo_three.clone();
+    // thread::spawn(move || {
+    //     dbg!(foo_four);
+    // });
+
+    // below code should not be used in production because it is using unsafe code
+    let user_nine_original = Arc::new(UserThree {
+        name: Rc::new("Helen".to_string()),
+        age: 45,
+    });
+
+    let user_nine = user_nine_original.clone();
+    let handle_ten = thread::spawn(move || {
+        let cloned_user_nine = user_nine.clone();
+        println!("Hello from eleventh thread: {:?}", cloned_user_nine);
+    });
+
+    let user_nine = user_nine_original.clone();
+    let handle_eleven = thread::spawn(move || {
+        let cloned_user_nine = user_nine.clone();
+        println!("Hello from twelfth thread: {:?}", cloned_user_nine);
+    });
+
+    handle_ten.join().unwrap();
+    handle_eleven.join().unwrap();
 }
 
