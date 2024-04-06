@@ -1,3 +1,4 @@
+#![feature(negative_impls)]
 use crossbeam::scope;
 use std::sync::Arc;
 use std::thread::spawn;
@@ -81,9 +82,16 @@ fn main() {
     handle_four.join().unwrap();
     handle_five.join().unwrap();
 
+    // this is not allowed to be shared across threads
     // let foo_one = Foo {};
     // let handle_six = spawn(move || {
     //     dbg!(foo_one);
     // });
     // handle_six.join().unwrap();
+    //
+    // this is still not allowed to be shared across threads
+    // let foo_two = Arc::new(Foo {});
+    // let handle_seven = spawn(move || {
+    //     dbg!(foo_two);
+    // });
 }
