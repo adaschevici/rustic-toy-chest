@@ -1,5 +1,6 @@
 #![feature(negative_impls)]
 use crossbeam::scope;
+use std::cell::{Cell, RefCell};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, sleep, spawn};
 use std::time::Duration;
@@ -8,6 +9,12 @@ use std::time::Duration;
 struct User {
     name: String,
     age: u32,
+}
+
+#[derive(Debug)]
+struct UserTwo {
+    name: RefCell<String>,
+    age: Cell<u32>,
 }
 
 #[derive(Debug)]
@@ -133,4 +140,19 @@ fn main() {
         });
     })
     .unwrap();
+
+    // let user_seven_original = Arc::new(UserTwo {
+    //     name: RefCell::new("Grace".to_string()),
+    //     age: Cell::new(50),
+    // });
+    //
+    // let user_seven = user_seven_original.clone();
+    // thread::spawn(move || {
+    //     user_seven.name.replace("Gracee".to_string());
+    // });
+    // let user_seven = user_seven_original.clone();
+    // thread::spawn(move || {
+    //     user_seven.age.set(55);
+    // });
 }
+
