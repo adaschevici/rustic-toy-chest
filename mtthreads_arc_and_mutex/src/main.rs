@@ -1,7 +1,8 @@
 #![feature(negative_impls)]
 use crossbeam::scope;
-use std::sync::Arc;
-use std::thread::spawn;
+use std::sync::{Arc, Mutex};
+use std::thread::{self, sleep, spawn};
+use std::time::Duration;
 
 #[derive(Debug)]
 struct User {
@@ -94,4 +95,25 @@ fn main() {
     // let handle_seven = spawn(move || {
     //     dbg!(foo_two);
     // });
+    let user_five_original = Arc::new(Mutex::new(User {
+        name: "Eve".to_string(),
+        age: 10,
+    }));
+    let user_five = user_five_original.clone();
+    let handle_eight = spawn(move || {
+        let mut locked_user_five = user_five.lock().unwrap();
+        locked_user_five.name = "Evee".to_string();
+        // user five cannot be locked multiple times because it will hang the program
+        // println!("Hello from eighth thread: {:?}", &user_five);
+    });
+    let user_five = user_five_original.clone();
+    let handle_nine = spawn(move || {
+        sleep(Duration::from_secs(1));
+        // user five cannot be locked multiple times because it will hang the program
+        // let mut locked_user_five = user_five.lock().unwrap();
+        // locked_user_five.name = "Eveee".to_string();
+        println!("Hello from ninth thread: {:?}", &user_five.lock().unwrap());
+    });
+    handle_eight.join().unwrap();
+    handle_nine.join().unwrap();
 }
