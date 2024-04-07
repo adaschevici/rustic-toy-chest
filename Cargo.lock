@@ -4101,6 +4101,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "select-async"
+version = "0.1.0"
+dependencies = [
+ "tokio",
+]
+
+[[package]]
 name = "self_cell"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
