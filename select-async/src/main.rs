@@ -30,6 +30,12 @@ async fn task_four() -> String {
     tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     "task_four".to_string()
 }
+
+async fn long_running_task_later() -> String {
+    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+    "long_running_task completed".to_string()
+}
+
 #[tokio::main]
 async fn main() {
     select! {
@@ -64,6 +70,21 @@ async fn main() {
         }
         Either::Right(res) => {
             println!("task_four completed with: {}", res);
+        }
+    }
+
+    let result = long_running_task_later().await;
+    println!("long_running_task completed: {}", result);
+    let mut interval = tokio::time::interval(std::time::Duration::from_secs(1));
+    loop {
+        select! {
+            _ = interval.tick() => {
+                println!("tick");
+            }
+            result = long_running_task_later() => {
+                println!("long_running_task completed: {:?}", result);
+                break;
+            }
         }
     }
 }
