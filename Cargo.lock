@@ -4104,6 +4104,7 @@ dependencies = [
 name = "select-async"
 version = "0.1.0"
 dependencies = [
+ "futures",
  "tokio",
 ]
 
