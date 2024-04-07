@@ -41,6 +41,18 @@ async fn network_request() -> Result<String, String> {
     Ok("network_request".to_string())
 }
 
+async fn message_stream() -> String {
+    // Simulating a message from a stream
+    tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+    "Message from stream".to_string()
+}
+
+async fn urgent_task() -> String {
+    // Simulating an urgent task
+    tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+    "Urgent task completed".to_string()
+}
+
 #[tokio::main]
 async fn main() {
     select! {
@@ -108,6 +120,15 @@ async fn main() {
                     println!("network_request timed out with error: {:?}", e);
                 }
             }
+        }
+    }
+
+    select! {
+        message = message_stream() => {
+            println!("Received message: {}", message);
+        }
+        task = urgent_task() => {
+            println!("Urgent task finished: {}", task);
         }
     }
 }
