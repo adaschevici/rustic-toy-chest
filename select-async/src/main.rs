@@ -53,6 +53,18 @@ async fn urgent_task() -> String {
     "Urgent task completed".to_string()
 }
 
+async fn operation_one() -> Result<String, &'static str> {
+    // Implementation...
+    tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+    Ok("Success from operation one".to_string())
+}
+
+async fn operation_two() -> Result<String, &'static str> {
+    // Implementation...
+    tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
+    Ok("Success from operation two".to_string())
+}
+
 #[tokio::main]
 async fn main() {
     select! {
@@ -130,5 +142,18 @@ async fn main() {
         task = urgent_task() => {
             println!("Urgent task finished: {}", task);
         }
+    }
+
+    let result = select! {
+        result = operation_one() => result.map(Either::Left).map_err(Either::Left),
+        result = operation_two() => result.map(Either::Right).map_err(Either::Right),
+    };
+
+    // Handle both success and error cases directly in the match statement
+    match result {
+        Ok(Either::Left(val)) => println!("Operation one successful: {}", val),
+        Ok(Either::Right(val)) => println!("Operation two successful: {}", val),
+        Err(Either::Left(e)) => println!("Operation one failed: {}", e),
+        Err(Either::Right(e)) => println!("Operation two failed: {}", e),
     }
 }
