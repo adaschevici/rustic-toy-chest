@@ -36,6 +36,11 @@ async fn long_running_task_later() -> String {
     "long_running_task completed".to_string()
 }
 
+async fn network_request() -> Result<String, String> {
+    tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+    Ok("network_request".to_string())
+}
+
 #[tokio::main]
 async fn main() {
     select! {
@@ -85,6 +90,23 @@ async fn main() {
             result = long_running_task.as_mut() => {
                 println!("long_running_task completed: {:?}", result);
                 break;
+            }
+        }
+    }
+
+    let timeout = tokio::time::timeout(std::time::Duration::from_secs(3), network_request());
+    select! {
+        _ = timeout => {
+            println!("Request timed out");
+        }
+        result = network_request() => {
+            match result {
+                Ok(res) => {
+                    println!("network_request completed with: {}", res);
+                }
+                Err(e) => {
+                    println!("network_request timed out with error: {:?}", e);
+                }
             }
         }
     }
