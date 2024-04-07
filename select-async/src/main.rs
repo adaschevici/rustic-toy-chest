@@ -32,7 +32,7 @@ async fn task_four() -> String {
 }
 
 async fn long_running_task_later() -> String {
-    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+    tokio::time::sleep(std::time::Duration::from_secs(10)).await;
     "long_running_task completed".to_string()
 }
 
@@ -73,15 +73,16 @@ async fn main() {
         }
     }
 
-    let result = long_running_task_later().await;
-    println!("long_running_task completed: {}", result);
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(1));
+    let long_running_task = long_running_task_later();
+    let mut long_running_task = Box::pin(long_running_task);
+
     loop {
         select! {
             _ = interval.tick() => {
                 println!("tick");
             }
-            result = long_running_task_later() => {
+            result = long_running_task.as_mut() => {
                 println!("long_running_task completed: {:?}", result);
                 break;
             }
