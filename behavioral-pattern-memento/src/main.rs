@@ -67,9 +67,9 @@ struct Editor {
 }
 
 impl Editor {
-    fn new(text: String) -> Editor {
+    fn new() -> Editor {
         Editor {
-            text,
+            text: String::new(),
             caretaker: CaretakerEditor::new(),
         }
     }
@@ -110,18 +110,17 @@ impl CaretakerEditor {
     }
 
     fn undo(&mut self) -> Option<Memento> {
-        if self.index > 0 {
-            self.index -= 1;
-            Some(self.mementos[self.index].clone())
+        if !self.mementos.is_empty() {
+            self.mementos.pop()
         } else {
             None
         }
     }
 
-    fn redo(&mut self) -> Option<Memento> {
+    fn redo(&mut self) -> Option<&Memento> {
         if self.index < self.mementos.len() - 1 {
             self.index += 1;
-            Some(self.mementos[self.index].clone())
+            Some(&self.mementos[self.index])
         } else {
             None
         }
