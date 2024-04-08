@@ -215,12 +215,93 @@ fn run_document_snapshots_usecase() {
     }
 }
 
+#[derive(Clone)]
+struct MementoNumeric {
+    state: f64,
+}
+
+impl MementoNumeric {
+    fn new(state: f64) -> MementoNumeric {
+        MementoNumeric { state }
+    }
+
+    fn get_state(&self) -> f64 {
+        self.state.clone()
+    }
+}
+
+struct BankAccount {
+    balance: f64,
+}
+
+impl BankAccount {
+    fn new(balance: f64) -> Self {
+        BankAccount { balance }
+    }
+
+    fn deposit(&mut self, amount: f64) {
+        self.balance += amount;
+    }
+
+    fn withdraw(&mut self, amount: f64) -> Result<(), String> {
+        // if self.balance >= amount {
+        self.balance -= amount;
+        Ok(())
+        // } else {
+        //     Err("Insufficient funds".to_string())
+        // }
+    }
+
+    fn create_memento(&self) -> MementoNumeric {
+        MementoNumeric::new(self.balance)
+    }
+
+    fn restore_memento(&mut self, memento: &MementoNumeric) {
+        self.balance = memento.get_state();
+    }
+}
+
+fn perform_transaction(account: &mut BankAccount, operations: Vec<fn(&mut BankAccount)>) {
+    let memento = account.create_memento();
+
+    for operation in operations {
+        operation(account);
+    }
+
+    if account.balance < 0.0 {
+        account.restore_memento(&memento);
+        println!("Transaction failed. Rolling back changes.");
+    } else {
+        println!("Transaction successful.");
+    }
+}
+
+fn run_account_transaction_usecase() {
+    let mut account = BankAccount::new(100.0);
+
+    perform_transaction(
+        &mut account,
+        vec![|acc| acc.deposit(50.0), |acc| acc.withdraw(200.0).unwrap()],
+    );
+
+    println!("Final balance: {}", account.balance);
+}
 fn main() {
-    let actions = vec!["basic", "editor", "document_snapshots"];
+    let actions = vec![
+        "basic",
+        "editor",
+        "document_snapshots",
+        "account_transaction",
+    ];
     let actions_map: std::collections::HashMap<&str, fn()> = [
         ("basic", run_basic_memento_usecase as fn()),
         ("editor", run_text_editor_usecase as fn()),
         ("document_snapshots", run_document_snapshots_usecase as fn()),
+        ("document_snapshots", run_document_snapshots_usecase as fn()),
+        (
+            "account_transaction",
+            run_account_transaction_usecase as fn(),
+        ),
     ]
     .into_iter()
     .collect();
