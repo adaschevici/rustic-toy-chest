@@ -40,6 +40,28 @@ impl Memento {
     }
 }
 
+// This is the object that will hold the Memento objects as a collection
+// and will be responsible for saving and restoring the Originator state
+struct Caretaker {
+    mementos: Vec<Memento>,
+}
+
+impl Caretaker {
+    fn new() -> Caretaker {
+        Caretaker {
+            mementos: Vec::new(),
+        }
+    }
+
+    fn add_memento(&mut self, memento: Memento) {
+        self.mementos.push(memento);
+    }
+
+    fn get_memento(&self, index: usize) -> Memento {
+        self.mementos[index].clone()
+    }
+}
+
 fn main() {
     println!("Hello, world!");
 }
