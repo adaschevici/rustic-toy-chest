@@ -61,6 +61,73 @@ impl Caretaker {
     }
 }
 
+struct Editor {
+    text: String,
+    caretaker: CaretakerEditor,
+}
+
+impl Editor {
+    fn new(text: String) -> Editor {
+        Editor {
+            text,
+            caretaker: CaretakerEditor::new(),
+        }
+    }
+
+    fn write(&mut self, content: &str) {
+        self.caretaker.add_memento(Memento::new(self.text.clone()));
+        self.text.push_str(content);
+    }
+
+    fn undo(&mut self) {
+        if let Some(memento) = self.caretaker.undo() {
+            self.text = memento.get_state().to_string();
+        }
+    }
+
+    fn redo(&mut self) {
+        if let Some(memento) = self.caretaker.redo() {
+            self.text = memento.get_state().to_string();
+        }
+    }
+}
+
+struct CaretakerEditor {
+    mementos: Vec<Memento>,
+    index: usize,
+}
+
+impl CaretakerEditor {
+    fn new() -> CaretakerEditor {
+        CaretakerEditor {
+            mementos: Vec::new(),
+            index: 0,
+        }
+    }
+
+    fn add_memento(&mut self, memento: Memento) {
+        self.mementos.push(memento);
+    }
+
+    fn undo(&mut self) -> Option<Memento> {
+        if self.index > 0 {
+            self.index -= 1;
+            Some(self.mementos[self.index].clone())
+        } else {
+            None
+        }
+    }
+
+    fn redo(&mut self) -> Option<Memento> {
+        if self.index < self.mementos.len() - 1 {
+            self.index += 1;
+            Some(self.mementos[self.index].clone())
+        } else {
+            None
+        }
+    }
+}
+
 fn main() {
     let mut originator = Originator::new("Initial state".to_string());
     let mut caretaker = Caretaker::new();
