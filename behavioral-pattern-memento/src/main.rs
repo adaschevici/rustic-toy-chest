@@ -4,10 +4,8 @@ struct Originator {
 
 // This is the object that will be saved and restored
 impl Originator {
-    fn new() -> Originator {
-        Originator {
-            state: String::new(),
-        }
+    fn new(state: String) -> Originator {
+        Originator { state }
     }
 
     fn set_state(&mut self, state: String) {
@@ -21,11 +19,12 @@ impl Originator {
     }
 
     fn restore_from_memento(&mut self, memento: Memento) {
-        self.state = memento.state;
+        self.state = memento.get_state().clone();
     }
 }
 
 // This is the object that will wrap the state of the Originator
+#[derive(Clone)]
 struct Memento {
     state: String,
 }
@@ -63,5 +62,19 @@ impl Caretaker {
 }
 
 fn main() {
-    println!("Hello, world!");
+    let mut originator = Originator::new("Initial state".to_string());
+    let mut caretaker = Caretaker::new();
+
+    caretaker.add_memento(originator.save_to_memento());
+
+    originator.set_state("State 1".to_string());
+    caretaker.add_memento(originator.save_to_memento());
+
+    originator.set_state("State 2".to_string());
+    caretaker.add_memento(originator.save_to_memento());
+
+    if let Some(memento) = caretaker.mementos.get(1) {
+        originator.restore_from_memento(memento.clone());
+        println!("Current state: {}", originator.state);
+    }
 }
