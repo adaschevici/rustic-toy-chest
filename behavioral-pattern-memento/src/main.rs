@@ -1,4 +1,6 @@
 use inquire::Select;
+use serde::{Deserialize, Serialize};
+use serde_json;
 
 struct Originator {
     state: String,
@@ -286,6 +288,32 @@ fn run_account_transaction_usecase() {
 
     println!("Final balance: {}", account.balance);
 }
+
+#[derive(Serialize, Deserialize)]
+struct MementoSerializable {
+    state: String,
+}
+
+impl MementoSerializable {
+    fn new(state: String) -> Self {
+        MementoSerializable { state }
+    }
+
+    fn get_state(&self) -> &str {
+        &self.state
+    }
+}
+
+fn save_memento_to_file(memento: &MementoSerializable, file_path: &str) {
+    let serialized = serde_json::to_string(memento).unwrap();
+    std::fs::write(file_path, serialized).unwrap();
+}
+
+fn load_memento_from_file(file_path: &str) -> MementoSerializable {
+    let serialized = std::fs::read_to_string(file_path).unwrap();
+    serde_json::from_str(&serialized).unwrap()
+}
+
 fn main() {
     let actions = vec![
         "basic",
