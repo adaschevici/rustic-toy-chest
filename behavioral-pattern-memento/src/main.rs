@@ -129,6 +129,24 @@ impl CaretakerEditor {
     }
 }
 
+struct Document {
+    content: String,
+}
+
+impl Document {
+    fn new(content: String) -> Self {
+        Document { content }
+    }
+
+    fn create_snapshot(&self) -> Memento {
+        Memento::new(self.content.clone())
+    }
+
+    fn restore_snapshot(&mut self, memento: &Memento) {
+        self.content = memento.get_state().to_string();
+    }
+}
+
 fn run_basic_memento_usecase() {
     let mut originator = Originator::new("Initial state".to_string());
     let mut caretaker = Caretaker::new();
@@ -164,11 +182,30 @@ fn run_text_editor_usecase() {
     println!("Current text: {}", editor.text);
 }
 
+fn run_document_snapshots_usecase() {
+    let mut document = Document::new("Initial content".to_string());
+    let mut caretaker = Caretaker::new();
+
+    caretaker.add_memento(document.create_snapshot());
+
+    document.content = "Content 1".to_string();
+    caretaker.add_memento(document.create_snapshot());
+
+    document.content = "Content 2".to_string();
+    caretaker.add_memento(document.create_snapshot());
+
+    if let Some(memento) = caretaker.mementos.get(1) {
+        document.restore_snapshot(memento);
+        println!("Current content: {}", document.content);
+    }
+}
+
 fn main() {
-    let actions = vec!["basic", "editor"];
+    let actions = vec!["basic", "editor", "document_snapshots"];
     let actions_map: std::collections::HashMap<&str, fn()> = [
         ("basic", run_basic_memento_usecase as fn()),
         ("editor", run_text_editor_usecase as fn()),
+        ("document_snapshots", run_document_snapshots_usecase as fn()),
     ]
     .into_iter()
     .collect();
