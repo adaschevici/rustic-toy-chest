@@ -1,3 +1,5 @@
+use inquire::Select;
+
 struct Originator {
     state: String,
 }
@@ -127,7 +129,7 @@ impl CaretakerEditor {
     }
 }
 
-fn main() {
+fn run_basic_memento_usecase() {
     let mut originator = Originator::new("Initial state".to_string());
     let mut caretaker = Caretaker::new();
 
@@ -142,5 +144,43 @@ fn main() {
     if let Some(memento) = caretaker.mementos.get(1) {
         originator.restore_from_memento(memento.clone());
         println!("Current state: {}", originator.state);
+    }
+}
+
+// this needs some tlc to get it to work properly. This is due to the fact that the undo is
+// destructive and redo should keep track of the undos
+fn run_text_editor_usecase() {
+    let mut editor = Editor::new();
+
+    editor.write("Hello, ");
+    editor.write("World!");
+
+    println!("Current text: {}", editor.text);
+
+    editor.undo();
+    println!("Current text: {}", editor.text);
+
+    editor.redo();
+    println!("Current text: {}", editor.text);
+}
+
+fn main() {
+    let actions = vec!["basic", "editor"];
+    let actions_map: std::collections::HashMap<&str, fn()> = [
+        ("basic", run_basic_memento_usecase as fn()),
+        ("editor", run_text_editor_usecase as fn()),
+    ]
+    .into_iter()
+    .collect();
+
+    let selected_action = Select::new("Choose an action:", actions).prompt();
+
+    match selected_action {
+        Ok(selected) => {
+            if let Some(&action) = actions_map.get(selected) {
+                action(); // Execute the selected action
+            }
+        }
+        Err(_) => println!("Error or user aborted prompt."),
     }
 }
