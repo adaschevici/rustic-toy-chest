@@ -183,6 +183,21 @@ fn run_text_editor_usecase() {
 }
 
 fn run_document_snapshots_usecase() {
+    // This code needs to be reworked a bit
+    // let mut document = Document::new("Initial content".to_string());
+    // let mut caretaker = Caretaker::new();
+    //
+    // // Create snapshots at different points
+    // caretaker.add_memento(document.create_snapshot());
+    //
+    // document.content = "Modified content".to_string();
+    // caretaker.add_memento(document.create_snapshot());
+    //
+    // // Restore to a previous snapshot
+    // if let Some(memento) = caretaker.get_memento(0) {
+    //     document.restore_snapshot(memento);
+    //     println!("Restored content: {}", document.content);
+    // }
     let mut document = Document::new("Initial content".to_string());
     let mut caretaker = Caretaker::new();
 
