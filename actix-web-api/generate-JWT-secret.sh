@@ -2,7 +2,13 @@
 # Generate a JWT secret
 # bash generate-JWT-secret.sh
 # Output: JWT secret
+
 echo "Choose an option:"
+
+ORIGINAL_COLUMNS=$COLUMNS
+# Set COLUMNS to a small number to try and force wrapping
+COLUMNS=1
+
 options=("Generate using openssl" "Generate using urandom" "Generate using node" "Quit")
 
 select opt in "${options[@]}"
@@ -26,3 +32,5 @@ do
         *) echo "invalid option $REPLY";;
     esac
 done
+
+COLUMNS=$ORIGINAL_COLUMNS
