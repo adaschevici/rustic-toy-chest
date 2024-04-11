@@ -15,11 +15,11 @@ select opt in "${options[@]}"
 do
     case $opt in
         "Generate using openssl")
-            openssl rand -base64 32
+            openssl rand -hex 32
             echo "You chose to generate using openssl"
             ;;
         "Generate using urandom")
-            head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo ''
+            head -c 32 /dev/urandom | xxd -p -c 64
             echo "You chose to generate using urandom"
             ;;
         "Generate using node")
