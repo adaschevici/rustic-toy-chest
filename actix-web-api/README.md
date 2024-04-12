@@ -24,7 +24,7 @@ This project serves as a comprehensive tutorial for building a web service using
    docker compose up -d
    ```
 
-3. **Upload Postman Collection**: Open up Postman locally via the desktop client. Then upload the file entitled `Web Service Tutorial.postman_collection.json`. You should now have access to the Postman collection.
+3. **Upload Postman Collection**: Open up Postman locally via the desktop client. Then upload the file entitled `postman.collection.json`. You should now have access to the Postman collection.
 4. **Get a Bearer Token**:
 
    1. Go to the `create_user` route under the `auth` folder.
@@ -46,6 +46,13 @@ This project serves as a comprehensive tutorial for building a web service using
 - Access the PgAdmin4 interface at `http://localhost:16543`.
 - Username: `test@test.com`
 - Password: `test`
+
+When running in docker, the PgAdmin is not accessible by default so the connection string needs to be configured as follows:
+
+- Hostname: `host.docker.internal`, docker defined networks will not resolve in PgAdmin so we need to use docker host.
+- Port: `5432`
+- Username: `<defined in docker-compose>`
+- Password: `<defined in docker-compose>`
 
 For detailed instructions on adding a PostgreSQL server in PgAdmin4, refer to the [PG Admin guide](https://onexlab-io.medium.com/docker-compose-postgres-initdb-ba0021deef76).
 

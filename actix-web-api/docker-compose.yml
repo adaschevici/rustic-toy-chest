@@ -11,6 +11,8 @@ services:
 
     ports: 
       - "5440:5432"
+    networks: 
+      - postgres-network
     volumes: 
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./sql:/docker-entrypoint-initdb.d/sql
@@ -22,5 +24,12 @@ services:
       PGADMIN_DEFAULT_PASSWORD: "weetfeet"
     ports: 
       - "16543:80"
+    networks:
+      - postgres-network
     depends_on: 
       - postgres
+
+networks:
+  postgres-network:
+    name: postgres-network
+    driver: bridge
