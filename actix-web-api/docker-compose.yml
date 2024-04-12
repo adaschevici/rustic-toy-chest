@@ -18,8 +18,8 @@ services:
   pgadmin-compose:
     image: dpage/pgadmin4
     environment: 
-      PGADMIN_DEFAULT_EMAIL: "test@test.com"
-      PGADMIN_DEFAULT_PASSWORD: "test"
+      PGADMIN_DEFAULT_EMAIL: "me@wtf.com"
+      PGADMIN_DEFAULT_PASSWORD: "weetfeet"
     ports: 
       - "16543:80"
     depends_on: 
