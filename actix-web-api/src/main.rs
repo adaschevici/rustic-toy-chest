@@ -4,6 +4,9 @@ use actix_web::{
     HttpServer,
 };
 
+pub mod models;
+pub mod routes;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(move || App::new().service(web::scope("/api/v1").service(routes::blog())))
