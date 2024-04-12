@@ -1,9 +1,10 @@
+use dotenvy::dotenv;
 use std::env;
 use std::process::Command;
 use std::process::ExitStatus;
 
 fn main() {
-    dotenv::dotenv().ok();
+    dotenv().ok();
 
     let mode = match env::var("MODE") {
         Ok(val) => val,
