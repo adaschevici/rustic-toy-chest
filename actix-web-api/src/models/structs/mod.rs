@@ -1,11 +1,10 @@
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 
 pub mod blog;
+pub mod error_message;
 
 pub use self::blog::Blog;
+pub use self::error_message::ErrorMessage;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Id {
