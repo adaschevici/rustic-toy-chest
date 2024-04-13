@@ -28,7 +28,7 @@ if ! grep -q "^DATABASE_URL" .env; then
   fi
 
   # Append the new DATABASE_URL line to a new line
-  echo -e "\nDATABASE_URL=postgres://root:root@$ip_address:5440/webservice_tutorial" >> .env
+  echo -e "\nDATABASE_URL=postgres://root:root@$ip_address:5440/webservice_example" >> .env
 else
   echo "DATABASE_URL is already set in .env"
 fi

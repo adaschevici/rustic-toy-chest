@@ -1,3 +1,4 @@
+use crate::db;
 use crate::models::structs::{Blog, Id};
 use actix_web::{
     delete, get, post, put,
@@ -7,7 +8,10 @@ use actix_web::{
 
 #[post("/blog")]
 async fn create_blog(data: Json<Blog>) -> Result<HttpResponse, Error> {
-    Ok(HttpResponse::Ok().json(data.into_inner()))
+    match db::connect().await {
+        Ok(_) => Ok(HttpResponse::Ok().json(data.into_inner())),
+        Err(e) => Ok(HttpResponse::InternalServerError().json(e)),
+    }
 }
 
 #[get("/blog")]

@@ -1,5 +1,4 @@
 use actix_web::Result;
-use dotenvy;
 use sqlx::PgPool;
 use std::env;
 
