@@ -1,9 +1,6 @@
-use actix_web::{
-    web,
-    App,
-    HttpServer,
-};
+use actix_web::{web, App, HttpServer};
 
+pub mod db;
 pub mod models;
 pub mod routes;
 
