@@ -134,5 +134,22 @@ async fn update_blog(data: Json<Blog>) -> Result<HttpResponse, ActixError> {
 
 #[delete("/blog")]
 async fn delete_blog(id: Json<Id>) -> Result<HttpResponse, ActixError> {
-    Ok(HttpResponse::Ok().json(id.into_inner()))
+    match db::connect().await {
+        Ok(pg) => {
+            let returned_blog: Result<Blog, Error> = sqlx::query_as!(
+                Blog,
+                r#"
+                DELETE FROM blog WHERE id = $1 RETURNING id, title, slug, content, image_link, thumbnail_link, featured, to_char(created, 'DD Month YYYY HH12:MI AM') as created, to_char(edited, 'DD Month YYYY HH12:MI AM') as edited
+                "#,
+                id.id
+            )
+            .fetch_one(&pg)
+            .await;
+            match returned_blog {
+                Ok(record) => Ok(HttpResponse::Ok().json(record)),
+                Err(e) => Ok(handle_sql_error(e)),
+            }
+        }
+        Err(e) => Ok(HttpResponse::InternalServerError().json(e)),
+    }
 }
