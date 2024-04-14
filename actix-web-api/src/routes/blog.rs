@@ -92,7 +92,44 @@ async fn get_featured_blogs() -> Result<HttpResponse, ActixError> {
 
 #[put("/blog")]
 async fn update_blog(data: Json<Blog>) -> Result<HttpResponse, ActixError> {
-    Ok(HttpResponse::Ok().json(data.into_inner()))
+    match db::connect().await {
+        Ok(pg) => {
+            let returned_blog: Result<Blog, Error> = sqlx::query_as!(
+                Blog,
+                r#"
+                INSERT INTO blog (id, title, slug, content, image_link, thumbnail_link, featured)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                ON CONFLICT (id)
+                DO UPDATE
+                SET
+                    title = EXCLUDED.title,
+                    slug = EXCLUDED.slug,
+                    content = EXCLUDED.content,
+                    image_link = EXCLUDED.image_link,
+                    thumbnail_link = EXCLUDED.thumbnail_link,
+                    featured = EXCLUDED.featured,
+                    edited = now()
+                RETURNING id, title, slug, content, image_link, thumbnail_link, featured,
+                    to_char(created, 'DD Month YYYY HH12:MI AM') as created,
+                    to_char(edited, 'DD Month YYYY HH12:MI AM') as edited
+                "#,
+                data.id,
+                data.title,
+                data.slug,
+                data.content,
+                data.image_link,
+                data.thumbnail_link,
+                data.featured
+            )
+            .fetch_one(&pg)
+            .await;
+            match returned_blog {
+                Ok(record) => Ok(HttpResponse::Ok().json(record)),
+                Err(e) => Ok(handle_sql_error(e)),
+            }
+        }
+        Err(e) => Ok(HttpResponse::InternalServerError().json(e)),
+    }
 }
 
 #[delete("/blog")]
