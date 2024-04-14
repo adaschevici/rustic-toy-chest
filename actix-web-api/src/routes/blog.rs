@@ -87,7 +87,23 @@ async fn get_blog_by_id_or_all(Query(id): Query<Id>) -> Result<HttpResponse, Act
 
 #[get("/blog/featured")]
 async fn get_featured_blogs() -> Result<HttpResponse, ActixError> {
-    Ok(HttpResponse::Ok().json("featured blogs"))
+    match db::connect().await {
+        Ok(pg) => {
+            let returned_blogs: Result<Vec<Blog>, Error> = sqlx::query_as!(
+                Blog,
+                r#"
+                SELECT id, title, slug, content, image_link, thumbnail_link, featured, to_char(created, 'DD Month YYYY HH12:MI AM') as created, to_char(edited, 'DD Month YYYY HH12:MI AM') as edited FROM blog WHERE featured = TRUE LIMIT 3
+                "#,
+            )
+            .fetch_all(&pg)
+            .await;
+            match returned_blogs {
+                Ok(records) => Ok(HttpResponse::Ok().json(records)),
+                Err(e) => Ok(handle_sql_error(e)),
+            }
+        }
+        Err(e) => Ok(HttpResponse::InternalServerError().json(e)),
+    }
 }
 
 #[put("/blog")]
