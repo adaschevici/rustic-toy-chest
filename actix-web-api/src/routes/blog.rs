@@ -1,6 +1,7 @@
 use crate::db;
 use crate::models::structs::{Blog, Id};
 use crate::utils::handle_sql_error;
+use actix_web::http::StatusCode;
 use actix_web::{
     delete, get, post, put,
     web::{Json, Query},
@@ -31,7 +32,10 @@ async fn create_blog(data: Json<Blog>) -> Result<HttpResponse, ActixError> {
             .fetch_one(&pg)
             .await;
             match returned_blog {
-                Ok(blog) => Ok(HttpResponse::Ok().json(blog)),
+                Ok(record) => Ok(HttpResponse::Created()
+                    .status(StatusCode::CREATED)
+                    .content_type("application/json")
+                    .json(record)),
                 Err(e) => Ok(handle_sql_error(e)),
             }
         }
