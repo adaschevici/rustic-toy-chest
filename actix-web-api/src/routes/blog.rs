@@ -45,8 +45,44 @@ async fn create_blog(data: Json<Blog>) -> Result<HttpResponse, ActixError> {
 
 #[get("/blog")]
 async fn get_blog_by_id_or_all(Query(id): Query<Id>) -> Result<HttpResponse, ActixError> {
-    println!("id: {:?}", id);
-    Ok(HttpResponse::Ok().json(id))
+    if id.id.is_some() {
+        match db::connect().await {
+            Ok(pg) => {
+                let returned_blog: Result<Blog, Error> = sqlx::query_as!(
+                    Blog,
+                    r#"
+                    SELECT id, title, slug, content, image_link, thumbnail_link, featured, to_char(created, 'DD Month YYYY HH12:MI AM') as created, to_char(edited, 'DD Month YYYY HH12:MI AM') as edited FROM blog WHERE id = $1 LIMIT 1
+                    "#,
+                    id.id
+                    )
+                    .fetch_one(&pg)
+                    .await;
+                match returned_blog {
+                    Ok(record) => Ok(HttpResponse::Ok().json(record)),
+                    Err(e) => Ok(handle_sql_error(e)),
+                }
+            },
+            Err(e) => Ok(HttpResponse::InternalServerError().json(e)),
+        }
+    } else {
+        match db::connect().await {
+            Ok(pg) => {
+                let returned_blogs: Result<Vec<Blog>, Error> = sqlx::query_as!(
+                    Blog,
+                    r#"
+                    SELECT id, title, slug, content, image_link, thumbnail_link, featured, to_char(created, 'DD Month YYYY HH12:MI AM') as created, to_char(edited, 'DD Month YYYY HH12:MI AM') as edited FROM blog
+                    "#,
+                    )
+                    .fetch_all(&pg)
+                    .await;
+                match returned_blogs {
+                    Ok(records) => Ok(HttpResponse::Ok().json(records)),
+                    Err(e) => Ok(handle_sql_error(e)),
+                }
+            },
+            Err(e) => Ok(HttpResponse::InternalServerError().json(e)),
+        }
+    }
 }
 
 #[get("/blog/featured")]
