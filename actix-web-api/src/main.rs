@@ -3,6 +3,7 @@ use actix_web::{web, App, HttpServer};
 pub mod db;
 pub mod models;
 pub mod routes;
+pub mod utils;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
