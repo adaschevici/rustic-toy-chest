@@ -1,4 +1,5 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
+use opentelemetry_otlp::WithExportConfig;
 use std::{io, str::FromStr};
 use tracing::{debug, info};
 use tracing_actix_web::TracingLogger;
@@ -31,6 +32,25 @@ async fn main() -> io::Result<()> {
     server.workers(2).run().await
 }
 
+// fn init_tracer(config: &Configurations) -> Result<opentelemetry_sdk::trace::Tracer, TraceError> {
+//     println!("Service name: {:?}", config.service.name.clone());
+//     println!("Tracing host: {:?}", config.tracing.host.clone());
+//     opentelemetry_otlp::new_pipeline()
+//         .tracing()
+//         .with_exporter(
+//             opentelemetry_otlp::new_exporter()
+//                 .tonic()
+//                 .with_endpoint(config.tracing.host.clone()),
+//         )
+//         .with_trace_config(
+//             sdktrace::config().with_resource(Resource::new(vec![KeyValue::new(
+//                 opentelemetry_semantic_conventions::resource::SERVICE_NAME,
+//                 config.service.name.clone(),
+//             )])),
+//         )
+//         .install_batch(runtime::Tokio)
+// }
+
 fn create_otlp_tracer() -> Option<opentelemetry_sdk::trace::Tracer> {
     if !std::env::vars().any(|(name, _)| name.starts_with("OTEL_")) {
         return None;
@@ -42,9 +62,10 @@ fn create_otlp_tracer() -> Option<opentelemetry_sdk::trace::Tracer> {
 
     let tracer = match protocol.as_str() {
         "grpc" => {
+            println!("Creating gRPC exporter");
             let mut exporter = opentelemetry_otlp::new_exporter()
                 .tonic()
-                .with_metadata(metadata_from_headers(headers));
+                .with_endpoint(std::env::var("OTEL_EXPORTER_OTLP_ENDPOINT").unwrap_or_default());
 
             // Check if we need TLS
             if let Ok(endpoint) = std::env::var("OTEL_EXPORTER_OTLP_ENDPOINT") {
@@ -55,6 +76,7 @@ fn create_otlp_tracer() -> Option<opentelemetry_sdk::trace::Tracer> {
             tracer.with_exporter(exporter)
         }
         "http/protobuf" => {
+            println!("Creating HTTP/Protobuf exporter");
             let exporter = opentelemetry_otlp::new_exporter()
                 .http()
                 .with_headers(headers.into_iter().collect());
