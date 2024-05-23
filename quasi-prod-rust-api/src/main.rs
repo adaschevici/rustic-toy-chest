@@ -41,7 +41,7 @@ async fn main() {
     let tracer = init_tracer(&config).expect("Failed to initialize tracer.");
     let fmt_layer = tracing_subscriber::fmt::layer();
     tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::from(&config.logger.level))
+        .with(tracing_subscriber::EnvFilter::from_default_env())
         .with(fmt_layer)
         .with(tracing_opentelemetry::layer().with_tracer(tracer))
         .init();

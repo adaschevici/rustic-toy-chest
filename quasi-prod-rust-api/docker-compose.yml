@@ -6,6 +6,8 @@ services:
     container_name: todoservice
     profiles: ["service"]
     build: .
+    environment:
+      - OTEL_SERVICE_NAME=todoservice
     ports:
       - 8090:8080
     depends_on:
