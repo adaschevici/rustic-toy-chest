@@ -4463,9 +4463,12 @@ dependencies = [
 name = "rust-crawl-pupp"
 version = "0.1.0"
 dependencies = [
+ "async-std",
  "chromiumoxide",
+ "chromiumoxide_cdp",
  "futures",
  "tokio",
+ "tracing-subscriber",
 ]
 
 [[package]]
