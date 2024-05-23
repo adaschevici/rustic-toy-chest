@@ -10,10 +10,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let tab = browser.new_tab().await.unwrap();
 
-    let response = tab
-        .navigate_to("https://www.rust-lang.org/")
-        .await
-        .unwrap();
+    let response = tab.navigate_to("https://www.rust-lang.org/").await.unwrap();
 
     let title = response.title().await.unwrap();
     println!("Title: {}", title);
