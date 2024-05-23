@@ -4464,6 +4464,8 @@ name = "rust-crawl-pupp"
 version = "0.1.0"
 dependencies = [
  "chromiumoxide",
+ "futures",
+ "tokio",
 ]
 
 [[package]]
