@@ -1,0 +1,7 @@
+[package]
+name = "rust-crawl-pupp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chromiumoxide = { version = "0.5.7", features = ["tokio", "tokio-runtime"] }
