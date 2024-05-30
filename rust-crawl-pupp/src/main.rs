@@ -28,10 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     });
-
-    let page = browser
-        .new_page("https://doc.rust-lang.org/std/thread/fn.sleep.html")
-        .await?;
+    let page = browser.new_page("https://en.wikipedia.org").await?;
     // let ten_millis = time::Duration::from_millis(5000);
     // let now = time::Instant::now();
 
@@ -42,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     .click()
     //     .await?;
 
-    page.find_element("input.search-input")
+    page.find_element("input[name='search']")
         .await?
         .click()
         .await?
@@ -53,7 +50,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // let _html = page.wait_for_navigation().await?.content().await?;
 
-    thread::sleep(time::Duration::from_secs(5));
     browser.close().await?;
     handle.await?;
     Ok(())
