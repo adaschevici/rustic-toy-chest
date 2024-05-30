@@ -7,8 +7,13 @@ use chromiumoxide::browser::{Browser, BrowserConfig};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
 
-    let (mut browser, mut handler) =
-        Browser::launch(BrowserConfig::builder().with_head().build()?).await?;
+    let (mut browser, mut handler) = Browser::launch(
+        BrowserConfig::builder()
+            .with_head()
+            .window_size(1400, 1600)
+            .build()?,
+    )
+    .await?;
 
     let handle = tokio::task::spawn(async move {
         loop {
@@ -46,6 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // let _html = page.wait_for_navigation().await?.content().await?;
 
+    thread::sleep(time::Duration::from_secs(5));
     browser.close().await?;
     handle.await?;
     Ok(())
