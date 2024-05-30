@@ -4,6 +4,7 @@ resolver = "2"
 members = [
   "perseus_todo",
   "leptos-todo",
+  "todo-leptos",
   "quasi-prod-rust-api",
   "tanti-srch", "system-calls", "actix-mock-tracing", "async-snippets", "polling-and-futures", "one_hundred_kay", "object-structured-patterns", "capn_proto_api_graphql", "basic_capnp", "mtthreads_arc_and_mutex", "select-async", "behavioral-pattern-memento", "actix-web-api", "rust-crawl-pupp", "cdp-proto",
 ]
