@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::menu::{MenuBuilder, MenuItemBuilder};
-use tauri::tray::{ClickType, TrayIconBuilder};
+use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 use tauri::Manager;
 
 use sysinfo::System;
@@ -35,7 +35,7 @@ fn main() {
                     }
                     _ => {}
                 })
-                .on_tray_icon_event(|tray_icon, event| match event.click_type {
+                .on_tray_icon_event(|tray_icon, event| match event.Click.button {
                     ClickType::Left => {
                         dbg!("system tray received a left click");
 
@@ -48,8 +48,8 @@ fn main() {
                         let logical_s = tauri::Size::Logical(logical_size);
                         let _ = window.set_size(logical_s);
                         let logical_position = tauri::LogicalPosition::<f64> {
-                            x: event.x - logical_size.width,
-                            y: event.y - logical_size.height - 70.,
+                            x: event.position.x - logical_size.width,
+                            y: event.position.y - logical_size.height - 70.,
                         };
                         let logical_pos: tauri::Position =
                             tauri::Position::Logical(logical_position);
