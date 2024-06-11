@@ -53,3 +53,4 @@ $ mm sb
 * Components: `components/ui` [components/ui](src/components/ui) (and `components/xui`), use [shadcn/ui](https://ui.shadcn.com/) for inspiration reviewing components use
 * Lints: `eslint` + `stylomatic` [.eslintrc.js](.eslintrc.js)
 
+This does not work as part of the workspace because the tauri app folder does not contain a Cargo.toml file in the root
