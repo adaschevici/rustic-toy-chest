@@ -53,6 +53,3 @@ $ mm sb
 * Components: `components/ui` [components/ui](src/components/ui) (and `components/xui`), use [shadcn/ui](https://ui.shadcn.com/) for inspiration reviewing components use
 * Lints: `eslint` + `stylomatic` [.eslintrc.js](.eslintrc.js)
 
-# License
-
-Copyright (c) 2023 [@jondot](http://twitter.com/jondot). See [LICENSE](LICENSE.txt) for further details.
