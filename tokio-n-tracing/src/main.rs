@@ -4,7 +4,7 @@ use tracing_subscriber::{layer::*, util::*};
 #[tokio::main]
 async fn main() {
     if std::env::var("RUST_LOG").is_err() {
-        std::env::set_var("RUST_LOG", "info");
+        std::env::set_var("RUST_LOG", "debug");
     }
 
     tracing_subscriber::registry()
@@ -17,6 +17,7 @@ async fn main() {
     info!("Result of adding 5 and 2: {}", result);
 }
 
+#[tracing::instrument]
 async fn trace_me(a: i32, b: i32) -> i32 {
     debug!("Adding {} and {}", a, b);
     a + b
