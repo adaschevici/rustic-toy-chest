@@ -5,6 +5,11 @@ edition = "2021"
 
 [dependencies]
 log = "0.4.21"
+opentelemetry = { version = "0.23.0", features = ["trace", "metrics", "logs"] }
+opentelemetry-otlp = { version = "0.16.0", features = ["trace", "metrics", "logs"] }
+opentelemetry-semantic-conventions = "0.15.0"
+opentelemetry_sdk = { version = "0.23.0", features = ["rt-tokio", "metrics"] }
 tokio = { version = "1.38.0", features = ["full"] }
 tracing = "0.1.40"
+tracing-opentelemetry = "0.24.0"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "fmt"] }
