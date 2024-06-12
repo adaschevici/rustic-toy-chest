@@ -1,16 +1,20 @@
 use log::*;
+use tracing_subscriber::{layer::*, util::*};
 
 #[tokio::main]
 async fn main() {
     if std::env::var("RUST_LOG").is_err() {
-        std::env::set_var("RUST_LOG", "info,myapp=debug");
+        std::env::set_var("RUST_LOG", "info");
     }
 
-    env_logger::init();
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::from_default_env())
+        .with(tracing_subscriber::fmt::Layer::default().compact())
+        .init();
 
-    info!("Before calling add");
-    let result = trace_me(5, 3).await;
-    info!("After calling add: {}", result);
+    info!("Prepare for adding");
+    let result = trace_me(5, 2).await;
+    info!("Result of adding 5 and 2: {}", result);
 }
 
 async fn trace_me(a: i32, b: i32) -> i32 {
