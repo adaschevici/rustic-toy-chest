@@ -17,6 +17,9 @@ async fn main() {
         std::env::set_var("RUST_LOG", "debug");
     }
 
+    let otlp_endpoint = "http://localhost:4317";
+    let resource = otel_resource();
+    let tracer = otel_tracer(otlp_endpoint, resource);
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::from_default_env())
         .with(tracing_subscriber::fmt::Layer::default().compact())
