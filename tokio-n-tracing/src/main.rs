@@ -1,4 +1,3 @@
-use log::*;
 use std::time::Duration;
 
 use opentelemetry::KeyValue;
@@ -8,6 +7,7 @@ use opentelemetry_sdk::resource::{
 };
 use opentelemetry_sdk::{trace as sdktrace, Resource};
 use opentelemetry_semantic_conventions::resource as otel_resource;
+use tracing::{debug, info};
 use tracing_subscriber::{layer::*, util::*, EnvFilter};
 
 #[tokio::main]
