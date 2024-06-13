@@ -18,7 +18,7 @@ async fn main() {
         }
     }
 
-    let otlp_endpoint = "http://localhost:4317";
+    let otlp_endpoint = "http://localhost:8888";
     let resource = otel_resource();
     let tracer = otel_tracer(otlp_endpoint, resource);
 
