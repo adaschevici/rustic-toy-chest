@@ -4,26 +4,37 @@ use std::time::Duration;
 use opentelemetry::KeyValue;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::resource::{
-    OsResourceDetector, ProcessResourceDetector, ResourceDetector, SdkProvidedResourceDetector,
-    TelemetryResourceDetector,
+    ResourceDetector, SdkProvidedResourceDetector, TelemetryResourceDetector,
 };
 use opentelemetry_sdk::{trace as sdktrace, Resource};
 use opentelemetry_semantic_conventions::resource as otel_resource;
-use tracing_subscriber::{layer::*, util::*};
+use tracing_subscriber::{layer::*, util::*, EnvFilter};
 
 #[tokio::main]
 async fn main() {
     if std::env::var("RUST_LOG").is_err() {
-        std::env::set_var("RUST_LOG", "debug");
+        unsafe {
+            std::env::set_var("RUST_LOG", "debug");
+        }
     }
 
     let otlp_endpoint = "http://localhost:4317";
     let resource = otel_resource();
     let tracer = otel_tracer(otlp_endpoint, resource);
+
+    let traces_layer = tracing_opentelemetry::layer()
+        .with_tracer(tracer)
+        .with_filter(EnvFilter::from_default_env());
+
+    let stdout_layer = tracing_subscriber::fmt::Layer::default()
+        .compact()
+        .with_filter(EnvFilter::from_default_env());
+
     tracing_subscriber::registry()
-        .with(tracing_subscriber::EnvFilter::from_default_env())
-        .with(tracing_subscriber::fmt::Layer::default().compact())
-        .init();
+        .with(traces_layer)
+        .with(stdout_layer)
+        .try_init()
+        .expect("Unable to initialize tracing subscriber");
 
     info!("Prepare for adding");
     let result = trace_me(5, 2).await;
@@ -50,8 +61,9 @@ fn otel_tracer(endpoint: &str, resource: Resource) -> sdktrace::Tracer {
         .expect("Unable to initialize OtlpPipeline for traces")
 }
 pub fn otel_resource() -> Resource {
-    let os_resource = OsResourceDetector.detect(Duration::from_secs(0));
-    let process_resource = ProcessResourceDetector.detect(Duration::from_secs(0));
+    // let os_resource = OsResourceDetector.detect(Duration::from_secs(0));
+    // let process_resource =
+    // ProcessResourceDetector.detect(Duration::from_secs(0));
     let telemetry_resource = TelemetryResourceDetector.detect(Duration::from_secs(0));
     let sdk_resource = SdkProvidedResourceDetector.detect(Duration::from_secs(0));
 
@@ -66,9 +78,7 @@ pub fn otel_resource() -> Resource {
         KeyValue::new(otel_resource::DEPLOYMENT_ENVIRONMENT, "development"),
     ]);
 
-    sdk_resource
-        .merge(&provided)
-        .merge(&telemetry_resource)
-        .merge(&os_resource)
-        .merge(&process_resource)
+    sdk_resource.merge(&provided).merge(&telemetry_resource)
+    // .merge(&os_resource)
+    // .merge(&process_resource)
 }
