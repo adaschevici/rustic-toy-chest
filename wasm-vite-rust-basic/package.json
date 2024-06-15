@@ -1,0 +1,15 @@
+{
+  "name": "wasm-example",
+  "version": "0.1.0",
+  "main": "./app/index.ts",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "wasm-pack build && vite build",
+    "dev": "vite",
+    "watch": "cargo watch -i .gitignore -i \"pkg/*\" -s \"wasm-pack build\""
+  },
+  "devDependencies": {
+    "vite": "^5.3.1",
+    "vite-plugin-wasm": "^3.3.0"
+  }
+}
