@@ -1,11 +1,30 @@
+use clap::Parser;
 use futures::StreamExt;
 use std::{thread, time};
+use tracing::info;
 
 use chromiumoxide::browser::{Browser, BrowserConfig};
+
+mod first_project;
+use crate::first_project::crawl;
+
+#[derive(Parser)]
+#[command(
+    name = "OxideCrawler",
+    version = "0.1",
+    author = "artur",
+    about = "An example application using clap"
+)]
+struct Cli {
+    #[arg(short = 'f', long = "first-project")]
+    first_project: bool,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
+    let args = Cli::parse();
+    info!(args.first_project, "Starting up");
 
     let (mut browser, mut handler) = Browser::launch(
         BrowserConfig::builder()
@@ -28,27 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     });
-    let page = browser.new_page("https://en.wikipedia.org").await?;
-    // let ten_millis = time::Duration::from_millis(5000);
-    // let now = time::Instant::now();
-
-    // thread::sleep(ten_millis);
-
-    // page.find_element("a.cdx-button--fake-button--enabled")
-    //     .await?
-    //     .click()
-    //     .await?;
-
-    page.find_element("input[name='search']")
-        .await?
-        .click()
-        .await?
-        .type_str("Rust programming language")
-        .await?
-        .press_key("Enter")
-        .await?;
-
-    // let _html = page.wait_for_navigation().await?.content().await?;
+    let page_content = crawl(&mut browser).await?;
 
     browser.close().await?;
     handle.await?;
