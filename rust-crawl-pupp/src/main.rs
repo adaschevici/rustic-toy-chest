@@ -6,7 +6,9 @@ use tracing::info;
 use chromiumoxide::browser::{Browser, BrowserConfig};
 
 mod first_project;
+mod second_project;
 use crate::first_project::spoof_user_agent;
+use crate::second_project::grab_root_content;
 
 #[derive(Parser)]
 #[command(
@@ -18,6 +20,8 @@ use crate::first_project::spoof_user_agent;
 struct Cli {
     #[arg(short, long = "first-project")]
     first_project: bool,
+    #[arg(short, long = "second-project")]
+    second_project: bool,
 }
 
 #[tokio::main]
@@ -55,6 +59,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         false => (),
     };
 
+    match args.second_project {
+        true => {
+            let content = grab_root_content(&mut browser).await?;
+            info!("{} {}", content.len(), "Length of root body content");
+        }
+        false => (),
+    };
     browser.close().await?;
     handle.await?;
     Ok(())
