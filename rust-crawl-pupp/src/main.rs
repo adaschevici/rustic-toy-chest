@@ -6,7 +6,7 @@ use tracing::info;
 use chromiumoxide::browser::{Browser, BrowserConfig};
 
 mod first_project;
-use crate::first_project::crawl;
+use crate::first_project::spoof_user_agent;
 
 #[derive(Parser)]
 #[command(
@@ -16,7 +16,7 @@ use crate::first_project::crawl;
     about = "An example application using clap"
 )]
 struct Cli {
-    #[arg(short = 'f', long = "first-project")]
+    #[arg(short, long = "first-project")]
     first_project: bool,
 }
 
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (mut browser, mut handler) = Browser::launch(
         BrowserConfig::builder()
-            .with_head()
+            //.with_head()
             .no_sandbox()
             .viewport(None)
             .window_size(1400, 1600)
@@ -47,7 +47,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     });
-    let page_content = crawl(&mut browser).await?;
+    match args.first_project {
+        true => {
+            let user_agent = spoof_user_agent(&mut browser).await?;
+            info!(user_agent, "User agent detected");
+        }
+        false => (),
+    };
 
     browser.close().await?;
     handle.await?;
