@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use futures::StreamExt;
 use std::{thread, time};
 use tracing::info;
@@ -18,17 +18,20 @@ use crate::second_project::grab_root_content;
     about = "An example application using clap"
 )]
 struct Cli {
-    #[arg(short, long = "first-project")]
-    first_project: bool,
-    #[arg(short, long = "second-project")]
-    second_project: bool,
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    FirstProject {},
+    SecondProject {},
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
     let args = Cli::parse();
-    info!(args.first_project, "Starting up");
 
     let (mut browser, mut handler) = Browser::launch(
         BrowserConfig::builder()
@@ -51,21 +54,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     });
-    match args.first_project {
-        true => {
+    match &args.command {
+        Commands::FirstProject {} => {
             let user_agent = spoof_user_agent(&mut browser).await?;
             info!(user_agent, "User agent detected");
         }
-        false => (),
-    };
-
-    match args.second_project {
-        true => {
+        Commands::SecondProject {} => {
             let content = grab_root_content(&mut browser).await?;
             info!("{} {}", content.len(), "Length of root body content");
         }
-        false => (),
-    };
+        _ => {
+            println!("{:#?}", args.command);
+        }
+    }
     browser.close().await?;
     handle.await?;
     Ok(())
