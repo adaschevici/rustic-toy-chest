@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (mut browser, mut handler) = Browser::launch(
         BrowserConfig::builder()
-            //.with_head()
+            .with_head()
             .no_sandbox()
             .viewport(None)
             .window_size(1400, 1600)

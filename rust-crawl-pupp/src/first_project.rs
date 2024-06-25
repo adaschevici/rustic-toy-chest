@@ -10,7 +10,7 @@ pub async fn spoof_user_agent(browser: &mut Browser) -> Result<String, Box<dyn s
     page.goto("https://www.whatismybrowser.com/detect/what-is-my-user-agent")
         .await?;
     let detected_ua = page
-        .find_element("div.detected_result > div#detected_value > a")
+        .find_element("div.detected_result > div#detected_value")
         .await?
         .inner_text()
         .await?
