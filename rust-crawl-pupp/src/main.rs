@@ -10,7 +10,9 @@ mod second_project;
 mod third_project;
 use crate::first_project::spoof_user_agent;
 use crate::second_project::grab_root_content;
-use crate::third_project::grab_list_of_elements_and_subelements_by_selector;
+use crate::third_project::{
+    grab_list_of_elements_and_subelements_by_selector, grab_list_of_elements_by_selector,
+};
 
 #[derive(Parser)]
 #[command(
@@ -29,6 +31,7 @@ enum Commands {
     FirstProject {},
     SecondProject {},
     ThirdProject {},
+    FourthProject {},
 }
 
 #[tokio::main]
@@ -68,6 +71,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::ThirdProject {} => {
             let elements = grab_list_of_elements_by_selector(&mut browser).await?;
+            info!("{} {}", elements.len(), "Number of elements found");
+            info!("{:?}", elements);
+        }
+        Commands::FourthProject {} => {
+            let elements = grab_list_of_elements_and_subelements_by_selector(&mut browser).await?;
             info!("{} {}", elements.len(), "Number of elements found");
             info!("{:?}", elements);
         }
