@@ -7,8 +7,10 @@ use chromiumoxide::browser::{Browser, BrowserConfig};
 
 mod first_project;
 mod second_project;
+mod third_project;
 use crate::first_project::spoof_user_agent;
 use crate::second_project::grab_root_content;
+use crate::third_project::grab_list_of_elements_and_subelements_by_selector;
 
 #[derive(Parser)]
 #[command(
@@ -26,6 +28,7 @@ struct Cli {
 enum Commands {
     FirstProject {},
     SecondProject {},
+    ThirdProject {},
 }
 
 #[tokio::main]
@@ -63,11 +66,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let content = grab_root_content(&mut browser).await?;
             info!("{} {}", content.len(), "Length of root body content");
         }
+        Commands::ThirdProject {} => {
+            let elements = grab_list_of_elements_by_selector(&mut browser).await?;
+            info!("{} {}", elements.len(), "Number of elements found");
+            info!("{:?}", elements);
+        }
         _ => {
             println!("{:#?}", args.command);
         }
     }
     browser.close().await?;
+    browser.kill().await.ok_or("Failed to kill browser")?;
     handle.await?;
     Ok(())
 }
