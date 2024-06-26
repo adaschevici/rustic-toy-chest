@@ -5,6 +5,7 @@ use tracing::info;
 
 use chromiumoxide::browser::{Browser, BrowserConfig};
 
+mod fifth_project;
 mod first_project;
 mod second_project;
 mod third_project;
@@ -13,6 +14,7 @@ use crate::second_project::grab_root_content;
 use crate::third_project::{
     grab_list_of_elements_and_subelements_by_selector, grab_list_of_elements_by_selector,
 };
+use fifth_project::scroll_to_bottom;
 
 #[derive(Parser)]
 #[command(
@@ -32,6 +34,7 @@ enum Commands {
     SecondProject {},
     ThirdProject {},
     FourthProject {},
+    FifthProject {},
 }
 
 #[tokio::main]
@@ -76,6 +79,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::FourthProject {} => {
             let elements = grab_list_of_elements_and_subelements_by_selector(&mut browser).await?;
+            info!("{} {}", elements.len(), "Number of elements found");
+            info!("{:?}", elements);
+        }
+        Commands::FifthProject {} => {
+            let _ = scroll_to_bottom(&mut browser).await?;
+            let elements = grab_list_of_elements_by_selector(&mut browser).await?;
             info!("{} {}", elements.len(), "Number of elements found");
             info!("{:?}", elements);
         }
