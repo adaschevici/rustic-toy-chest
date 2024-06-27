@@ -8,13 +8,16 @@ use chromiumoxide::browser::{Browser, BrowserConfig};
 mod fifth_project;
 mod first_project;
 mod second_project;
+mod sixth_project;
 mod third_project;
+
 use crate::first_project::spoof_user_agent;
 use crate::second_project::grab_root_content;
 use crate::third_project::{
     grab_list_of_elements_and_subelements_by_selector, grab_list_of_elements_by_selector,
 };
 use fifth_project::scroll_to_bottom;
+use sixth_project::wait_for_element;
 
 #[derive(Parser)]
 #[command(
@@ -35,6 +38,7 @@ enum Commands {
     ThirdProject {},
     FourthProject {},
     FifthProject {},
+    SixthProject {},
 }
 
 #[tokio::main]
@@ -88,12 +92,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             info!("{} {}", elements.len(), "Number of elements found");
             info!("{:?}", elements);
         }
+        Commands::SixthProject {} => {
+            let outcome = wait_for_element(&mut browser).await;
+            match outcome {
+                Ok(_) => {
+                    info!("Element found");
+                }
+                Err(e) => {
+                    info!("{:?}", e);
+                }
+            }
+        }
         _ => {
             println!("{:#?}", args.command);
         }
     }
     browser.close().await?;
-    browser.kill().await.ok_or("Failed to kill browser")?;
+    browser.wait().await?;
     handle.await?;
     Ok(())
 }

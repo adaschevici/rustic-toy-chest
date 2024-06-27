@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Set a delay (in milliseconds)
-    const delay = 3000; // 3000ms = 3 seconds
+    const delay = 30000; // 3000ms = 3 seconds
 
     // Use setTimeout to create and append the node after the delay
     setTimeout(createDelayedNode, delay);
