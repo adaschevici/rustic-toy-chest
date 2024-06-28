@@ -111,7 +111,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let _ = capture_full_page_screenshot(&mut browser).await?;
         }
         Commands::EighthProject {} => {
-            let _ = capture_selector_screenshot(&mut browser, ".post:nth-child(4)").await?;
+            let _ = capture_selector_screenshot(&mut browser, ".post:nth-child(1)").await?;
         }
         _ => {
             println!("{:#?}", args.command);

@@ -36,5 +36,6 @@ pub async fn capture_selector_screenshot(
     let screenshot = element_handle
         .save_screenshot(CaptureScreenshotFormat::Png, "example-selector.png")
         .await?;
+    // std::thread::sleep(std::time::Duration::from_secs(100));
     Ok(())
 }
