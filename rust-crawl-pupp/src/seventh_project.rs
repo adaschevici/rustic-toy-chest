@@ -6,7 +6,9 @@ use chromiumoxide::Browser;
 pub async fn capture_full_page_screenshot(
     browser: &mut Browser,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let page = browser.new_page("https://www.rust-lang.org").await?;
+    let page = browser
+        .new_page("https://scrapingclub.com/exercise/list_infinite_scroll/")
+        .await?;
     let screenshot = page
         .save_screenshot(
             ScreenshotParams::builder()
