@@ -7,6 +7,7 @@ use chromiumoxide::browser::{Browser, BrowserConfig};
 
 mod fifth_project;
 mod first_project;
+mod ninth_project;
 mod second_project;
 mod seventh_project;
 mod sixth_project;
@@ -18,6 +19,7 @@ use crate::third_project::{
     grab_list_of_elements_and_subelements_by_selector, grab_list_of_elements_by_selector,
 };
 use fifth_project::scroll_to_bottom;
+use ninth_project::get_page_frames;
 use seventh_project::{capture_full_page_screenshot, capture_selector_screenshot};
 use sixth_project::wait_for_element;
 
@@ -43,6 +45,7 @@ enum Commands {
     SixthProject {},
     SeventhProject {},
     EighthProject {},
+    NinthProject {},
 }
 
 #[tokio::main]
@@ -112,6 +115,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::EighthProject {} => {
             let _ = capture_selector_screenshot(&mut browser, ".post:nth-child(1)").await?;
+        }
+        Commands::NinthProject {} => {
+            let frames = get_page_frames(&mut browser).await?;
+            info!("{:?}", frames);
         }
         _ => {
             println!("{:#?}", args.command);
