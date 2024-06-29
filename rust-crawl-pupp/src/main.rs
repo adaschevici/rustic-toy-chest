@@ -19,7 +19,7 @@ use crate::third_project::{
     grab_list_of_elements_and_subelements_by_selector, grab_list_of_elements_by_selector,
 };
 use fifth_project::scroll_to_bottom;
-use ninth_project::get_page_frames;
+use ninth_project::{get_nested_iframe_element, get_page_frames};
 use seventh_project::{capture_full_page_screenshot, capture_selector_screenshot};
 use sixth_project::wait_for_element;
 
@@ -46,6 +46,7 @@ enum Commands {
     SeventhProject {},
     EighthProject {},
     NinthProject {},
+    TenthProject {},
 }
 
 #[tokio::main]
@@ -119,6 +120,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::NinthProject {} => {
             let frames = get_page_frames(&mut browser).await?;
             info!("{:?}", frames);
+        }
+        Commands::TenthProject {} => {
+            let element = get_nested_iframe_element(&mut browser).await?;
+            info!("{:?}", element);
         }
         _ => {
             println!("{:#?}", args.command);
