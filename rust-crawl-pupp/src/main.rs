@@ -67,8 +67,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let handle = tokio::task::spawn(async move {
         loop {
             match handler.next().await {
-                Some(h) => match h {
-                    Ok(_) => continue,
+                Some(event) => match event {
+                    Ok(_) => {
+                        tracing::debug!(event = ?event, "Event");
+                    }
                     Err(_) => break,
                 },
                 None => break,
