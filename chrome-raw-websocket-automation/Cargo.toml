@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+futures = "0.3.30"
 futures-util = { version = "0.3.30", features = ["sink", "tokio-io"] }
 inquire = "0.7.5"
 serde = { version = "1.0.203", features = ["derive"] }

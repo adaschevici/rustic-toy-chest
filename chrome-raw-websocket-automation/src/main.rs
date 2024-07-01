@@ -1,5 +1,6 @@
 use inquire::Select;
 
+use futures::future::BoxFuture;
 use futures_util::{SinkExt, StreamExt};
 use serde_json::json;
 use tokio::net::TcpStream;
@@ -51,7 +52,8 @@ async fn navigate_to_page() {
 #[tokio::main]
 async fn main() {
     // Define the list of functions
-    let functions: Vec<(&str, fn())> = vec![("Navigate to example.com", navigate_to_page)];
+    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> =
+        vec![("Navigate to example.com", || Box::pin(navigate_to_page()))];
 
     // Create a vector of function names
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
