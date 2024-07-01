@@ -13,7 +13,7 @@ async fn navigate_to_page() {
     // Replace with the WebSocket URL of the Chrome browser.
     let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
     let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
-    println!("Connecting to {}", url);
+    info!("Connecting to {}", url);
 
     // Connect to the WebSocket server
     let (ws_stream, _) = connect_async(websocket_url)
@@ -48,6 +48,10 @@ async fn navigate_to_page() {
         }
     }
 }
+
+async fn subscribe_to_event() {}
+
+async fn list_targets() {}
 
 #[tokio::main]
 async fn main() {
