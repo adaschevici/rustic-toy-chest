@@ -8,7 +8,7 @@ use tracing::info;
 use tungstenite::protocol::Message;
 use url::Url;
 
-async fn navigate_to_page(page_id: &str) {
+async fn navigate_to_page() {
     // Replace with the WebSocket URL of the Chrome browser.
     let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
     let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
@@ -45,26 +45,20 @@ async fn navigate_to_page(page_id: &str) {
             },
             Err(e) => println!("Error receiving message: {}", e),
         }
-    }
+    };
 }
 
 #[tokio::main]
-async fn main() {}
-
-fn main() {
+async fn main() {
     // Define the list of functions
-    let functions: Vec<(&str, fn())> = vec![
-        ("Greet", greet),
-        ("Add", add),
-        ("Subtract", subtract),
-        ("Multiply", multiply),
-    ];
+    let functions: Vec<(&str, fn())> = vec![("Navigate to example.com", navigate_to_page)];
 
     // Create a vector of function names
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
     // Prompt the user to select a function
     let selected_function = Select::new("Choose a function to execute:", function_names)
+        .with_starting_cursor(function_names.len() - 1)
         .prompt()
         .expect("Failed to read input");
 
