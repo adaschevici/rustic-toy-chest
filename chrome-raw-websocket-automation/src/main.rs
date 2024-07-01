@@ -60,7 +60,7 @@ async fn main() {
 
     // Prompt the user to select a function
     let selected_function = Select::new("Choose a function to execute:", function_names.clone())
-        .with_starting_cursor(0)
+        .with_starting_cursor(function_names.len() - 1)
         .prompt()
         .expect("Failed to read input");
 
