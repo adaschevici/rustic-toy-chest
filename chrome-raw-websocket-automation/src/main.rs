@@ -2,17 +2,19 @@ use futures_util::{SinkExt, StreamExt};
 use serde_json::json;
 use tokio::net::TcpStream;
 use tokio_tungstenite::connect_async;
+use tracing::info;
 use tungstenite::protocol::Message;
 use url::Url;
 
 #[tokio::main]
 async fn main() {
     // Replace with the WebSocket URL of the Chrome browser.
-    let websocket_url = "ws://localhost:9222/devtools/page/AE3DF76262E0BD6382EE2D94B367A1D4";
+    let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
     let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
+    println!("Connecting to {}", url);
 
     // Connect to the WebSocket server
-    let (ws_stream, _) = connect_async(websocket_url)
+    let (ws_stream, _) = connect_async(url.to_string())
         .await
         .expect("Failed to connect");
     //
