@@ -1,3 +1,5 @@
+use inquire::Select;
+
 use futures_util::{SinkExt, StreamExt};
 use serde_json::json;
 use tokio::net::TcpStream;
@@ -6,15 +8,14 @@ use tracing::info;
 use tungstenite::protocol::Message;
 use url::Url;
 
-#[tokio::main]
-async fn main() {
+async fn navigate_to_page(page_id: &str) {
     // Replace with the WebSocket URL of the Chrome browser.
     let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
     let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
     println!("Connecting to {}", url);
 
     // Connect to the WebSocket server
-    let (ws_stream, _) = connect_async(url.to_string())
+    let (ws_stream, _) = connect_async(websocket_url)
         .await
         .expect("Failed to connect");
     //
@@ -45,4 +46,54 @@ async fn main() {
             Err(e) => println!("Error receiving message: {}", e),
         }
     }
+}
+
+#[tokio::main]
+async fn main() {}
+
+fn main() {
+    // Define the list of functions
+    let functions: Vec<(&str, fn())> = vec![
+        ("Greet", greet),
+        ("Add", add),
+        ("Subtract", subtract),
+        ("Multiply", multiply),
+    ];
+
+    // Create a vector of function names
+    let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
+
+    // Prompt the user to select a function
+    let selected_function = Select::new("Choose a function to execute:", function_names)
+        .prompt()
+        .expect("Failed to read input");
+
+    // Find and execute the corresponding function
+    for (name, function) in functions {
+        if name == selected_function {
+            function();
+        }
+    }
+}
+
+fn greet() {
+    println!("Hello, world!");
+}
+
+fn add() {
+    let a = 2;
+    let b = 3;
+    println!("{} + {} = {}", a, b, a + b);
+}
+
+fn subtract() {
+    let a = 5;
+    let b = 3;
+    println!("{} - {} = {}", a, b, a - b);
+}
+
+fn multiply() {
+    let a = 4;
+    let b = 3;
+    println!("{} * {} = {}", a, b, a * b);
 }

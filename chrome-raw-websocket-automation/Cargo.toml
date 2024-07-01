@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 futures-util = { version = "0.3.30", features = ["sink", "tokio-io"] }
+inquire = "0.7.5"
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.119"
 tokio = { version = "1.38.0", features = ["full"] }
