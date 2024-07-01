@@ -46,7 +46,7 @@ async fn navigate_to_page() {
             },
             Err(e) => println!("Error receiving message: {}", e),
         }
-    };
+    }
 }
 
 #[tokio::main]
@@ -59,15 +59,15 @@ async fn main() {
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
     // Prompt the user to select a function
-    let selected_function = Select::new("Choose a function to execute:", function_names)
-        .with_starting_cursor(function_names.len() - 1)
+    let selected_function = Select::new("Choose a function to execute:", function_names.clone())
+        .with_starting_cursor(0)
         .prompt()
         .expect("Failed to read input");
 
     // Find and execute the corresponding function
     for (name, function) in functions {
         if name == selected_function {
-            function();
+            function().await;
         }
     }
 }
