@@ -62,11 +62,32 @@ async fn subscribe_to_event() {}
 
 async fn list_targets() {}
 
+async fn get_tabs() {
+    // Connect to the WebSocket server
+    let client = Client::new();
+
+    let tabs: Vec<Tab> = client
+        .get("http://localhost:9222/json")
+        .send()
+        .await?
+        .json()
+        .await?;
+
+    // Print the tab IDs and their URLs
+    for tab in tabs.iter() {
+        println!("Tab ID: {}, Title: {}, URL: {}", tab.id, tab.title, tab.url);
+        if let Some(ws_url) = &tab.websocket_debugger_url {
+            println!("WebSocket Debugger URL: {}", ws_url);
+        }
+    }
+}
 #[tokio::main]
 async fn main() {
     // Define the list of functions
-    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> =
-        vec![("Navigate to example.com", || Box::pin(navigate_to_page()))];
+    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
+        ("Navigate to example.com", || Box::pin(navigate_to_page())),
+        ("List tabs", || Box::pin(get_tabs())),
+    ];
 
     // Create a vector of function names
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
