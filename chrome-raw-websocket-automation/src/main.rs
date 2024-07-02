@@ -9,6 +9,15 @@ use tracing::info;
 use tungstenite::protocol::Message;
 use url::Url;
 
+#[derive(Debug, Deserialize)]
+struct Tab {
+    id: String,
+    title: String,
+    url: String,
+    #[serde(rename = "webSocketDebuggerUrl")]
+    websocket_debugger_url: String,
+}
+
 async fn navigate_to_page() {
     // Replace with the WebSocket URL of the Chrome browser.
     let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
