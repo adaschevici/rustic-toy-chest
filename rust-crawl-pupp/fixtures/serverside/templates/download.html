@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Page</title>
+</head>
+<body>
+    <h1>Look at the image below</h1>
+        <img src="{{ url_for('static', filename='darts.png') }}" alt="Flower">
+    <h1>Download File</h1>
+    <p>Click the link below to download your file:</p>
+    <a id="download-link" href="/download/largefile.txt">Download largefile.txt</a>
+    <h1>Download File via button click</h1>
+    <p>Click the link below to download your file:</p>
+    <button id="download">
+        <a href="/download/largefile.txt">Download largefile.txt</a>
+    </button>
+    <h1>Download File via button click from inside a form</h1>
+    <p>Click the link below to download your file:</p>
+    <form action="/download/largefile.txt" method="get">
+        <button type="submit">Download example.txt</button>
+    </form>
+</body>
+</html>
+

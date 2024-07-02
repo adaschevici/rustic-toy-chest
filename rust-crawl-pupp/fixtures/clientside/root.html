@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        iframe {
+            width: 600px;
+            height: 400px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="coca">Parent Page</h1>
+    <p>This is the parent page. The iframe below will load after a delay.</p>
+    <iframe id="root-iframe" src="http://localhost:8081/iframe.html"></iframe>
+    <!-- <iframe id="second-delayed-iframe" src="http://localhost:8081/iframe.html"></iframe> -->
+
+    <script>
+        // document.getElementById('delayed-iframe').url = 'http://localhost:8081/iframe.html';
+        // Delay loading the iframe content
+        // setTimeout(function() {
+        //     document.getElementById('delayed-iframe').src = 'iframe.html';
+        // }, 5000); // 5 seconds delay
+    </script>
+</body>
+</html>
+
