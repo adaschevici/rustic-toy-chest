@@ -2,8 +2,10 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod observer;
 mod state_pattern;
 
+use observer::run_observer;
 use state_pattern::run_state_pattern;
 
 #[tokio::main]
@@ -12,10 +14,13 @@ async fn main() {
     // Define the list of functions
     info!("Defining functions");
 
-    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![(
-        "Run state pattern example",
-        || Box::pin(run_state_pattern()),
-    )];
+    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
+        (
+            "Run state pattern example",
+            || Box::pin(run_state_pattern()),
+        ),
+        ("Run observer pattern example", || Box::pin(run_observer())),
+    ];
 
     // Create a vector of function names
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
