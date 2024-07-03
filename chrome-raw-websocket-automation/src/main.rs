@@ -2,6 +2,8 @@ use inquire::Select;
 
 use futures::future::BoxFuture;
 use futures_util::{SinkExt, StreamExt};
+use reqwest::Client;
+use serde::Deserialize;
 use serde_json::json;
 use tokio::net::TcpStream;
 use tokio_tungstenite::connect_async;
@@ -15,7 +17,7 @@ struct Tab {
     title: String,
     url: String,
     #[serde(rename = "webSocketDebuggerUrl")]
-    websocket_debugger_url: String,
+    websocket_debugger_url: Option<String>,
 }
 
 async fn navigate_to_page() {
@@ -69,9 +71,11 @@ async fn get_tabs() {
     let tabs: Vec<Tab> = client
         .get("http://localhost:9222/json")
         .send()
-        .await?
+        .await
+        .expect("Failed to send request")
         .json()
-        .await?;
+        .await
+        .expect("Failed to parse JSON");
 
     // Print the tab IDs and their URLs
     for tab in tabs.iter() {
