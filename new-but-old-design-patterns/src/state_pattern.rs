@@ -1,89 +1,95 @@
+use async_trait::async_trait;
+use std::sync::Arc;
 use tracing::info;
 
-trait AnimalState {
-    fn on_enter(&self);
-    fn on_exit(&self);
-    fn behavior(&self);
+#[async_trait]
+trait AnimalState: Send + Sync {
+    async fn on_enter(&self);
+    async fn on_exit(&self);
+    async fn behavior(&self);
 }
 
 struct Sleeping;
 struct Eating;
 struct Playing;
 
+#[async_trait]
 impl AnimalState for Sleeping {
-    fn on_enter(&self) {
+    async fn on_enter(&self) {
         info!("Entering sleeping state");
     }
 
-    fn on_exit(&self) {
+    async fn on_exit(&self) {
         info!("Exiting sleeping state");
     }
 
-    fn behavior(&self) {
+    async fn behavior(&self) {
         info!("Sleeping");
     }
 }
 
+#[async_trait]
 impl AnimalState for Eating {
-    fn on_enter(&self) {
+    async fn on_enter(&self) {
         info!("Entering eating state");
     }
 
-    fn on_exit(&self) {
+    async fn on_exit(&self) {
         info!("Exiting eating state");
     }
 
-    fn behavior(&self) {
+    async fn behavior(&self) {
         info!("Eating");
     }
 }
 
+#[async_trait]
 impl AnimalState for Playing {
-    fn on_enter(&self) {
+    async fn on_enter(&self) {
         info!("Entering playing state");
     }
 
-    fn on_exit(&self) {
+    async fn on_exit(&self) {
         info!("Exiting playing state");
     }
 
-    fn behavior(&self) {
+    async fn behavior(&self) {
         info!("Playing");
     }
 }
 
 struct Animal {
-    state: Box<dyn AnimalState>,
+    state: Arc<dyn AnimalState>,
 }
 
 impl Animal {
-    fn new(initial_state: Box<dyn AnimalState>) -> Self {
+    fn new(initial_state: Arc<dyn AnimalState>) -> Animal {
         initial_state.on_enter();
-        Self {
+        Animal {
             state: initial_state,
         }
     }
 
-    fn change_state(&mut self, new_state: Box<dyn AnimalState>) {
-        self.state.on_exit();
+    async fn change_state(&mut self, new_state: Arc<dyn AnimalState>) {
+        self.state.on_exit().await;
         self.state = new_state;
-        self.state.on_enter();
+        self.state.on_enter().await;
     }
 
-    fn exhibit_behavior(&self) {
-        self.state.behavior();
+    async fn exhibit_behavior(&self) {
+        self.state.behavior().await;
     }
 }
 
 pub async fn run_state_pattern() {
-    let sleeping_state = Box::new(Sleeping);
-    let eating_state = Box::new(Eating);
-    let playing_state = Box::new(Playing);
+    let sleeping_state = Arc::new(Sleeping);
+    let eating_state = Arc::new(Eating);
+    let playing_state = Arc::new(Playing);
     let mut animal = Animal::new(sleeping_state);
-    animal.exhibit_behavior();
-    animal.change_state(eating_state);
-    animal.exhibit_behavior();
-    animal.change_state(playing_state);
+    animal.exhibit_behavior().await;
+    animal.change_state(eating_state).await;
+    animal.exhibit_behavior().await;
+    animal.change_state(playing_state).await;
     animal.exhibit_behavior();
     info!("Running state pattern example");
 }
