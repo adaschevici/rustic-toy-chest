@@ -1,43 +1,51 @@
+use async_trait::async_trait;
+
+#[async_trait]
 trait CareRoutine {
-    fn execute(&self);
+    async fn execute(&self);
 }
 
 struct FeedingRoutine;
 struct CleaningRoutine;
 struct EntertainmentRoutine;
 
+#[async_trait]
 impl CareRoutine for FeedingRoutine {
-    fn execute(&self) {
+    async fn execute(&self) {
         println!("Feeding the animals with their favorite snacks.");
     }
 }
+
+#[async_trait]
 impl CareRoutine for CleaningRoutine {
-    fn execute(&self) {
+    async fn execute(&self) {
         println!("Cleaning the animal enclosures for a fresh environment.");
     }
 }
+
+#[async_trait]
 impl CareRoutine for EntertainmentRoutine {
-    fn execute(&self) {
+    async fn execute(&self) {
         println!("Playing interactive games with the animals.");
     }
 }
 
 struct Animal {
     name: String,
-    care_routine: Box<dyn CareRoutine>,
+    care_routine: Box<dyn CareRoutine + Send + Sync>,
 }
 
 impl Animal {
-    fn new(name: String, care_routine: Box<dyn CareRoutine>) -> Animal {
+    async fn new(name: String, care_routine: Box<dyn CareRoutine + Send + Sync>) -> Animal {
         Animal { name, care_routine }
     }
 
-    fn perform_care(&self) {
+    async fn perform_care(&self) {
         println!("{}: ", self.name);
-        self.care_routine.execute();
+        self.care_routine.execute().await;
     }
 
-    fn set_care_routine(&mut self, new_routine: Box<dyn CareRoutine>) {
+    async fn set_care_routine(&mut self, new_routine: Box<dyn CareRoutine + Send + Sync>) {
         self.care_routine = new_routine;
     }
 }
@@ -46,10 +54,10 @@ pub async fn run_strategy() {
     let feeding = Box::new(FeedingRoutine);
     let cleaning = Box::new(CleaningRoutine);
     let entertainment = Box::new(EntertainmentRoutine);
-    let mut leo = Animal::new("Leo the Lion".to_string(), feeding);
-    leo.perform_care();
-    leo.set_care_routine(cleaning);
-    leo.perform_care();
-    leo.set_care_routine(entertainment);
-    leo.perform_care();
+    let mut leo = Animal::new("Leo the Lion".to_string(), feeding).await;
+    leo.perform_care().await;
+    leo.set_care_routine(cleaning).await;
+    leo.perform_care().await;
+    leo.set_care_routine(entertainment).await;
+    leo.perform_care().await;
 }

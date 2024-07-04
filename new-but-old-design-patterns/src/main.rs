@@ -4,9 +4,11 @@ use tracing::info;
 
 mod observer;
 mod state_pattern;
+mod strategy;
 
 use observer::run_observer;
 use state_pattern::run_state_pattern;
+use strategy::run_strategy;
 
 #[tokio::main]
 async fn main() {
@@ -20,6 +22,7 @@ async fn main() {
             || Box::pin(run_state_pattern()),
         ),
         ("Run observer pattern example", || Box::pin(run_observer())),
+        ("Run strategy pattern example", || Box::pin(run_strategy())),
     ];
 
     // Create a vector of function names
