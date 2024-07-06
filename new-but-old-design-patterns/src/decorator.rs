@@ -6,6 +6,8 @@ trait Component {
 }
 
 struct ConcreteComponent;
+
+#[async_trait]
 impl Component for ConcreteComponent {
     async fn operation(&self) -> String {
         "ConcreteComponent".to_string()
@@ -38,7 +40,7 @@ impl<T: Component + Send + Sync> MoodDecorator<T> {
     }
 }
 #[async_trait]
-impl<T: Component> Component for MoodDecorator<T> {
+impl<T: Component + Send + Sync> Component for MoodDecorator<T> {
     async fn operation(&self) -> String {
         format!(
             "{} and is feeling {}",
