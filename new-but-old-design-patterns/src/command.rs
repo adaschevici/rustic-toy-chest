@@ -41,10 +41,47 @@ impl Command for MoveAnimal {
     }
 }
 
+struct Zookeeper {
+    commands: Vec<Box<dyn Command + Send + Sync>>,
+}
+
+impl Zookeeper {
+    async fn new() -> Zookeeper {
+        Zookeeper {
+            commands: Vec::new(),
+        }
+    }
+
+    async fn add_command(&mut self, command: Box<dyn Command + Send + Sync>) {
+        self.commands.push(command);
+    }
+
+    async fn execute_commands(&self) {
+        for command in &self.commands {
+            command.execute().await;
+        }
+    }
+}
+
 pub async fn run_command() {
-    let command = AddAnimal {
-        name: "Leo".to_string(),
-        species: "Lion".to_string(),
-    };
-    command.execute().await;
+    let mut zookeeper = Zookeeper::new().await;
+    zookeeper
+        .add_command(Box::new(AddAnimal {
+            name: "Leo".to_string(),
+            species: "Lion".to_string(),
+        }))
+        .await;
+    zookeeper
+        .add_command(Box::new(FeedAnimal {
+            name: "Leo".to_string(),
+            food: "steak".to_string(),
+        }))
+        .await;
+    zookeeper
+        .add_command(Box::new(MoveAnimal {
+            name: "Leo".to_string(),
+            enclosure: "Savannah Exhibit".to_string(),
+        }))
+        .await;
+    zookeeper.execute_commands().await;
 }
