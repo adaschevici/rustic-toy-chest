@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 struct Animal {
     species: String,
     name: String,
@@ -6,37 +8,45 @@ struct Animal {
 struct Zoo {
     animals: Vec<Animal>,
 }
+#[async_trait]
+trait AsyncIterator {
+    type Item;
 
+    async fn next(&mut self) -> Option<Self::Item>;
+}
 impl Zoo {
-    fn new() -> Zoo {
+    async fn new() -> Zoo {
         Zoo {
             animals: Vec::new(),
         }
     }
 
-    fn add_animal(&mut self, animal: Animal) {
+    async fn add_animal(&mut self, animal: Animal) {
         self.animals.push(animal);
     }
 }
 
-impl Iterator for Zoo {
+#[async_trait]
+impl AsyncIterator for Zoo {
     type Item = Animal;
-    fn next(&mut self) -> Option<Self::Item> {
+    async fn next(&mut self) -> Option<Self::Item> {
         self.animals.pop()
     }
 }
 
 pub async fn run_iterator() {
-    let mut zoo = Zoo::new();
+    let mut zoo = Zoo::new().await;
     zoo.add_animal(Animal {
         species: "Lion".to_string(),
         name: "Leo".to_string(),
-    });
+    })
+    .await;
     zoo.add_animal(Animal {
         species: "Tiger".to_string(),
         name: "Tigger".to_string(),
-    });
-    while let Some(animal) = zoo.next() {
+    })
+    .await;
+    while let Some(animal) = zoo.next().await {
         println!("We have a {} named {}", animal.species, animal.name);
     }
 }
