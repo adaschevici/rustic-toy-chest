@@ -1,49 +1,54 @@
+use async_trait::async_trait;
+
+#[async_trait]
 trait Component {
-    fn operation(&self) -> String;
+    async fn operation(&self) -> String;
 }
 
 struct ConcreteComponent;
 impl Component for ConcreteComponent {
-    fn operation(&self) -> String {
+    async fn operation(&self) -> String {
         "ConcreteComponent".to_string()
     }
 }
 
-struct Decorator<T: Component> {
+struct Decorator<T: Component + Send + Sync> {
     component: T,
 }
 
-impl<T: Component> Decorator<T> {
-    fn new(component: T) -> Self {
+impl<T: Component + Send + Sync> Decorator<T> {
+    async fn new(component: T) -> Self {
         Decorator { component }
     }
 }
 
-impl<T: Component> Component for Decorator<T> {
-    fn operation(&self) -> String {
-        format!("Decorator({})", self.component.operation())
+#[async_trait]
+impl<T: Component + Send + Sync> Component for Decorator<T> {
+    async fn operation(&self) -> String {
+        format!("Decorator({})", self.component.operation().await)
     }
 }
-struct MoodDecorator<T: Component> {
+struct MoodDecorator<T: Component + Send + Sync> {
     component: T,
     mood: String,
 }
-impl<T: Component> MoodDecorator<T> {
-    fn new(component: T, mood: String) -> Self {
+impl<T: Component + Send + Sync> MoodDecorator<T> {
+    async fn new(component: T, mood: String) -> Self {
         MoodDecorator { component, mood }
     }
 }
+#[async_trait]
 impl<T: Component> Component for MoodDecorator<T> {
-    fn operation(&self) -> String {
+    async fn operation(&self) -> String {
         format!(
             "{} and is feeling {}",
-            self.component.operation(),
+            self.component.operation().await,
             self.mood
         )
     }
 }
 pub async fn run_decorator() {
     let animal = ConcreteComponent;
-    let happy_animal = MoodDecorator::new(animal, "happy".to_string());
-    println!("The animal is now: {}", happy_animal.operation());
+    let happy_animal = MoodDecorator::new(animal, "happy".to_string()).await;
+    println!("The animal is now: {}", happy_animal.operation().await);
 }
