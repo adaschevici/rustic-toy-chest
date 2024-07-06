@@ -2,6 +2,7 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod command;
 mod iterator;
 mod observer;
 mod state_pattern;
@@ -26,6 +27,9 @@ async fn main() {
         ("Run strategy pattern example", || Box::pin(run_strategy())),
         ("Run iterator pattern example", || {
             Box::pin(iterator::run_iterator())
+        }),
+        ("Run command pattern example", || {
+            Box::pin(command::run_command())
         }),
     ];
 
