@@ -3,6 +3,7 @@ use inquire::Select;
 use tracing::info;
 
 mod command;
+mod decorator;
 mod iterator;
 mod observer;
 mod state_pattern;
