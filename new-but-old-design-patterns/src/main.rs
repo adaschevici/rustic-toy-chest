@@ -4,6 +4,7 @@ use tracing::info;
 
 mod command;
 mod decorator;
+mod factory;
 mod iterator;
 mod observer;
 mod state_pattern;
@@ -34,6 +35,9 @@ async fn main() {
         }),
         ("Run decorator pattern example", || {
             Box::pin(decorator::run_decorator())
+        }),
+        ("Run factory pattern example", || {
+            Box::pin(factory::run_factory())
         }),
     ];
 
