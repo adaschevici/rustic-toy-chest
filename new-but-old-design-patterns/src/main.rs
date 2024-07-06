@@ -2,6 +2,7 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod iterator;
 mod observer;
 mod state_pattern;
 mod strategy;
@@ -23,6 +24,9 @@ async fn main() {
         ),
         ("Run observer pattern example", || Box::pin(run_observer())),
         ("Run strategy pattern example", || Box::pin(run_strategy())),
+        ("Run iterator pattern example", || {
+            Box::pin(iterator::run_iterator())
+        }),
     ];
 
     // Create a vector of function names
