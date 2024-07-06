@@ -32,6 +32,9 @@ async fn main() {
         ("Run command pattern example", || {
             Box::pin(command::run_command())
         }),
+        ("Run decorator pattern example", || {
+            Box::pin(decorator::run_decorator())
+        }),
     ];
 
     // Create a vector of function names
