@@ -1,37 +1,45 @@
+use async_trait::async_trait;
+
+#[async_trait]
 trait AnimalFactory {
-    fn create_animal(&self) -> Box<dyn Animal>;
+    async fn create_animal(&self) -> Box<dyn Animal + Send + Sync>;
 }
 
 struct LionFactory;
 struct GiraffeFactory;
 
+#[async_trait]
 impl AnimalFactory for LionFactory {
-    fn create_animal(&self) -> Box<dyn Animal> {
+    async fn create_animal(&self) -> Box<dyn Animal + Send + Sync> {
         Box::new(Lion)
     }
 }
 
+#[async_trait]
 impl AnimalFactory for GiraffeFactory {
-    fn create_animal(&self) -> Box<dyn Animal> {
+    async fn create_animal(&self) -> Box<dyn Animal + Send + Sync> {
         Box::new(Giraffe)
     }
 }
 
+#[async_trait]
 trait Animal {
-    fn make_sound(&self);
+    async fn make_sound(&self);
 }
 
 struct Lion;
 struct Giraffe;
 
+#[async_trait]
 impl Animal for Lion {
-    fn make_sound(&self) {
+    async fn make_sound(&self) {
         println!("Roar!");
     }
 }
 
+#[async_trait]
 impl Animal for Giraffe {
-    fn make_sound(&self) {
+    async fn make_sound(&self) {
         println!("Neck snap!");
     }
 }
@@ -39,8 +47,8 @@ impl Animal for Giraffe {
 pub async fn run_factory() {
     let lion_factory = LionFactory;
     let giraffe_factory = GiraffeFactory;
-    let lion = lion_factory.create_animal();
-    let giraffe = giraffe_factory.create_animal();
-    lion.make_sound(); // Outputs: Roar!
-    giraffe.make_sound(); // Outputs: Neck snap!
+    let lion = lion_factory.create_animal().await;
+    let giraffe = giraffe_factory.create_animal().await;
+    lion.make_sound().await; // Outputs: Roar!
+    giraffe.make_sound().await; // Outputs: Neck snap!
 }
