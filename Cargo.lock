@@ -700,9 +700,9 @@ checksum = "fbb36e985947064623dbd357f727af08ffd077f93d696782f3c56365fa2e2799"
 
 [[package]]
 name = "async-trait"
-version = "0.1.77"
+version = "0.1.80"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c980ee35e870bd1a4d2c8294d4c04d0499e67bca1e4b5cefcc693c2fa00caea9"
+checksum = "c6fa2087f2753a7da8cc1c0dbfcf89579dd57458e36769de5ac750b4671737ca"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3768,6 +3768,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "macro-exampled"
+version = "0.1.0"
+dependencies = [
+ "futures 0.3.30",
+ "inquire",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "malloc_buf"
 version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4041,6 +4052,18 @@ dependencies = [
  "cfg-if 0.1.10",
  "libc",
  "winapi 0.3.9",
+]
+
+[[package]]
+name = "new-but-old-design-patterns"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "futures 0.3.30",
+ "inquire",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
