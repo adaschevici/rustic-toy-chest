@@ -30,6 +30,7 @@ impl AnimalCareModule {
     }
     async fn feed_all_animals(&self) {
         // Detailed logic for feeding animals
+        info!("All animals have been fed!");
     }
     // More complex methods
 }
@@ -42,6 +43,7 @@ impl HabitatMaintenanceModule {
     }
     async fn prepare_habitats(&self) {
         // Detailed logic for preparing habitats
+        info!("Habitats are now ready for the day!");
     }
     // More complex methods
 }
