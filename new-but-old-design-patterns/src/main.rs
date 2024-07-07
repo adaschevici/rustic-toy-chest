@@ -5,6 +5,7 @@ use tracing::info;
 mod adapter;
 mod command;
 mod decorator;
+mod facade;
 mod factory;
 mod iterator;
 mod observer;
@@ -42,6 +43,9 @@ async fn main() {
             Box::pin(factory::run_factory())
         }),
         ("Run adapter pattern example", || Box::pin(run_adapter())),
+        ("Run facade pattern example", || {
+            Box::pin(facade::run_facade())
+        }),
     ];
 
     // Create a vector of function names
