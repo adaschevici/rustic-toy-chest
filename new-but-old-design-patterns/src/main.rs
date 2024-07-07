@@ -2,6 +2,7 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod adapter;
 mod command;
 mod decorator;
 mod factory;
@@ -10,6 +11,7 @@ mod observer;
 mod state_pattern;
 mod strategy;
 
+use adapter::run_adapter;
 use observer::run_observer;
 use state_pattern::run_state_pattern;
 use strategy::run_strategy;
@@ -39,6 +41,7 @@ async fn main() {
         ("Run factory pattern example", || {
             Box::pin(factory::run_factory())
         }),
+        ("Run adapter pattern example", || Box::pin(run_adapter())),
     ];
 
     // Create a vector of function names
