@@ -2,6 +2,10 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod basic_macros;
+
+use basic_macros::animal_behaviour;
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
