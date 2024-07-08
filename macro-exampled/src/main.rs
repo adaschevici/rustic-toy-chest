@@ -3,6 +3,7 @@ use inquire::Select;
 use tracing::info;
 
 mod animal_behavior_macro;
+mod procedural_macros;
 
 #[tokio::main]
 async fn main() {
@@ -16,6 +17,9 @@ async fn main() {
         }),
         ("Run basic macro example", || {
             Box::pin(animal_behavior_macro::run_animal_behavior_macro())
+        }),
+        ("Run procedural macro example", || {
+            Box::pin(procedural_macros::run_jsonify_macro())
         }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
