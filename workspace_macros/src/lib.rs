@@ -3,6 +3,9 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
+mod to_json;
+use to_json::ToJson;
+
 #[proc_macro_derive(ToJson)]
 pub fn to_json_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -17,4 +20,5 @@ pub fn to_json_derive(input: TokenStream) -> TokenStream {
             }
         }
     };
+    TokenStream::from(expanded)
 }
