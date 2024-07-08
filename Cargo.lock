@@ -7976,8 +7976,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "worksppace_macros"
+name = "workspace_macros"
 version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.69",
+]
 
 [[package]]
 name = "ws2_32-sys"
