@@ -6,6 +6,9 @@ edition = "2021"
 [dependencies]
 futures = "0.3.30"
 inquire = "0.7.5"
+proc-macro2 = "1.0.86"
+quote = "1.0.36"
+syn = "2.0.69"
 tokio = { version = "1.38.0", features = ["full"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "fmt"] }
