@@ -21,6 +21,9 @@ async fn main() {
         ("Run procedural macro example", || {
             Box::pin(procedural_macros::run_jsonify_macro())
         }),
+        ("Run generic procedural macro example", || {
+            Box::pin(procedural_macros::run_jsonify_generic_macro())
+        }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 

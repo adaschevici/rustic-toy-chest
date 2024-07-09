@@ -31,12 +31,15 @@ pub async fn run_jsonify_macro() {
     };
     let json = person.to_json();
     println!("{}", json);
-    let zombie = ZombiePerson {
+}
+
+pub async fn run_jsonify_generic_macro() {
+    let zombie_person = ZombiePerson {
         name: "Bob".to_string(),
         age: 30,
         is_alive: false,
         is_zombie: true,
     };
-    let json = zombie.to_json();
+    let json = zombie_person.to_json();
     println!("{}", json);
 }
