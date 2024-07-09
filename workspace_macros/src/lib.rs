@@ -40,6 +40,7 @@ pub fn to_json_generic_derive(input: TokenStream) -> TokenStream {
                     fn to_json(&self) -> String {
                         let mut map = ::std::collections::HashMap::new();
                         #(map.insert(#field_strings.to_string(), ::serde_json::to_value(&self.#field_names).unwrap());)*
+                        ::serde_json::to_string(&map).unwrap()
                     }
                 }
             }
