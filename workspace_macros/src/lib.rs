@@ -2,7 +2,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::quote;
 use serde_json;
-use syn::{parse_macro_input, AttributeArgs, Data, DeriveInput, Lit, Meta, NestedMeta};
+use syn::{parse_macro_input, Attribute, Data, DeriveInput, ItemFn, Lit, LitStr, Meta, NestedMeta};
 
 mod to_json;
 use to_json::{ToJson, ToJsonGeneric};
@@ -58,52 +58,98 @@ pub fn to_json_generic_derive(input: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
+// #[proc_macro_attribute]
+// pub fn route(args: TokenStream, input: TokenStream) -> TokenStream {
+//     // Parse the attribute arguments
+//     let args = parse_macro_input!(args as AttributeArgs);
+//
+//     // Parse the function the attribute is applied to
+//     let input = parse_macro_input!(input as ItemFn);
+//
+//     // Extract the route path and HTTP method from the attribute arguments
+//     let mut route_path = String::new();
+//     let mut method = String::new();
+//
+//     for arg in args {
+//         match arg {
+//             NestedMeta::Meta(Meta::NameValue(meta)) => {
+//                 if meta.path.is_ident("path") {
+//                     if let Lit::Str(lit) = meta {
+//                         route_path = lit.value();
+//                     }
+//                 } else if meta.path.is_ident("method") {
+//                     if let Lit::Str(lit) = meta {
+//                         method = lit.value();
+//                     }
+//                 }
+//             }
+//             _ => {}
+//         }
+//     }
+//
+//     // Extract the function name
+//     let fn_name = &input.sig.ident;
+//
+//     // Generate the routing code
+//     let expanded = quote! {
+//         #input
+//
+//         // Register the route
+//         fn register_routes() {
+//             let route_path = #route_path;
+//             let method = #method.to_string();
+//
+//             // This is where you would integrate with your routing library
+//             // For example:
+//             // router.add_route(method, route_path, #fn_name);
+//             println!("Registered route: {} {}", method, route_path);
+//         }
+//     };
+//
+//     TokenStream::from(expanded)
+// }
+
 #[proc_macro_attribute]
-pub fn route(args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn call_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     // Parse the attribute arguments
     let args = parse_macro_input!(args as AttributeArgs);
 
     // Parse the function the attribute is applied to
     let input = parse_macro_input!(input as ItemFn);
 
-    // Extract the route path and HTTP method from the attribute arguments
-    let mut route_path = String::new();
-    let mut method = String::new();
+    // Extract the function name from the attribute arguments
+    let mut fn_to_call = None;
 
     for arg in args {
-        match arg {
-            NestedMeta::Meta(Meta::NameValue(meta)) => {
-                if meta.path.is_ident("path") {
-                    if let Lit::Str(lit) = meta.lit {
-                        route_path = lit.value();
-                    }
-                } else if meta.path.is_ident("method") {
-                    if let Lit::Str(lit) = meta.lit {
-                        method = lit.value();
-                    }
+        if let NestedMeta::Meta(Meta::NameValue(meta_name_value)) = arg {
+            if meta_name_value.path.is_ident("fn") {
+                let expr = quote!(#meta_name_value);
+                let expr_string = expr.to_string();
+                if let Lit::Str(lit_str) = LitStr::new(&expr_string, expr.span()) {
+                    fn_to_call = Some(lit_str.value());
                 }
             }
-            _ => {}
         }
     }
 
-    // Extract the function name
-    let fn_name = &input.sig.ident;
-
-    // Generate the routing code
-    let expanded = quote! {
-        #input
-
-        // Register the route
-        fn register_routes() {
-            let route_path = #route_path;
-            let method = #method.to_string();
-
-            // This is where you would integrate with your routing library
-            // For example:
-            // router.add_route(method, route_path, #fn_name);
-            println!("Registered route: {} {}", method, route_path);
-        }
+    // Match the function name to the appropriate function call
+    let expanded = match fn_to_call.as_deref() {
+        Some("hello") => quote! {
+            #input
+            fn call_fn() {
+                hello();
+            }
+        },
+        Some("goodbye") => quote! {
+            #input
+            fn call_fn() {
+                goodbye();
+            }
+        },
+        _ => quote! {
+            #input
+            compile_error!("Unknown function specified in the attribute");
+        },
     };
 
     TokenStream::from(expanded)

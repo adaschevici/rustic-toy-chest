@@ -4,6 +4,7 @@ use tracing::info;
 
 mod animal_behavior_macro;
 mod procedural_macros;
+mod routing_to_functions;
 
 #[tokio::main]
 async fn main() {
@@ -23,6 +24,9 @@ async fn main() {
         }),
         ("Run generic procedural macro example", || {
             Box::pin(procedural_macros::run_jsonify_generic_macro())
+        }),
+        ("Run routing to functions example", || {
+            Box::pin(routing_to_functions::run_routing_to_functions())
         }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
