@@ -2,7 +2,9 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::quote;
 use serde_json;
-use syn::{parse_macro_input, Attribute, Data, DeriveInput, ItemFn, Lit, LitStr, Meta, NestedMeta};
+use syn::{
+    parse_macro_input, AttributeArgs, Data, DeriveInput, ItemFn, Lit, LitStr, Meta, NestedMeta,
+};
 
 mod to_json;
 use to_json::{ToJson, ToJsonGeneric};
@@ -130,7 +132,7 @@ pub fn call_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     println!("{:?}", fn_to_call);
 
     // Match the function name to the appropriate function call
-    let expanded = match quote!(#fn_to_call).to_string() {
+    let expanded = match Some(quote!(#fn_to_call).to_string().as_str()) {
         Some("hello") => quote! {
             #input
             fn call_fn() {
