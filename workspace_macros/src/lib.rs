@@ -123,17 +123,14 @@ pub fn call_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     for arg in args {
         if let NestedMeta::Meta(Meta::NameValue(meta_name_value)) = arg {
             if meta_name_value.path.is_ident("fn") {
-                let expr = quote!(#meta_name_value);
-                let expr_string = expr.to_string();
-                if let Lit::Str(lit_str) = LitStr::new(&expr_string, expr.span()) {
-                    fn_to_call = Some(lit_str.value());
-                }
+                fn_to_call = Some(meta_name_value.value);
             }
         }
     }
+    println!("{:?}", fn_to_call);
 
     // Match the function name to the appropriate function call
-    let expanded = match fn_to_call.as_deref() {
+    let expanded = match quote!(#fn_to_call).to_string() {
         Some("hello") => quote! {
             #input
             fn call_fn() {
