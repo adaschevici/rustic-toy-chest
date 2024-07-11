@@ -2,7 +2,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::quote;
 use serde_json;
-use syn::{parse_macro_input, Data, DeriveInput, ItemFn, Lit, LitStr, Meta, Path};
+use syn::{parse_macro_input, Data, DeriveInput, ItemFn, ItemStruct, Lit, LitStr, Meta, Path};
 
 mod to_json;
 use to_json::{ToJson, ToJsonGeneric};
@@ -156,7 +156,7 @@ pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut kind: Option<LitStr> = None;
     let mut hot: bool = false;
     let mut with: Vec<Path> = Vec::new();
-    let input = parse_macro_input!(input as ItemStruct);
+    let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
     let tea_parser = syn::meta::parser(|meta| {
         if meta.path.is_ident("kind") {
@@ -176,7 +176,6 @@ pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     });
 
     parse_macro_input!(args with tea_parser);
-    eprintln!("hot={hot}");
 
     let output = quote! {
         #input
@@ -214,10 +213,22 @@ pub fn tea_over_struct(args: TokenStream, input: TokenStream) -> TokenStream {
 
     parse_macro_input!(args with tea_parser);
 
+    let kind_str = kind.unwrap();
+    let hot_str = if hot { "hot" } else { "cold" };
+    let with_str = with
+        .iter()
+        .map(|path| path.segments.iter().next().unwrap().ident.as_ref())
+        .collect::<Vec<_>>()
+        .join(", ");
+
     let output = quote! {
         #input
         impl #name() {
-            println!("Tea kind: {}", #kind);
+            pub fn describe_tea(&self) {
+                println!("Tea kind: {}", #kind_str);
+                println!("Tea temperature: {}", #hot_str);
+                println!("Tea with: {}", #with_str);
+            }
         }
     };
 
