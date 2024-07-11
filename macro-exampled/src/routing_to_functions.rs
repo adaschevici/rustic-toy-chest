@@ -1,4 +1,4 @@
-use workspace_macros::tea;
+use workspace_macros::{tea_over_fn, tea_over_struct};
 
 // #[route(path = "/hello", method = "GET")]
 // fn hello() {
@@ -26,18 +26,19 @@ use workspace_macros::tea;
 
 pub async fn run_tea_making_on_struct() {
     // This will call the hello function
-    #[tea(kind = "Green", hot, with(Lemon, Honey))]
+    #[tea_over_struct(kind = "Green", hot, with(Lemon, Honey))]
     struct Picard {
         rank: String,
     }
     let pcrd = Picard {
         rank: "Captain".to_string(),
     };
+    pcrd.desribe_tea();
 }
 
 pub async fn run_tea_making_on_function() {
     // This will call the hello function
-    #[tea(kind = "Green", hot, with(Lemon, Honey))]
+    #[tea_over_fn(kind = "Green", hot, with(Lemon, Honey))]
     fn make_tea() {}
 
     make_tea();

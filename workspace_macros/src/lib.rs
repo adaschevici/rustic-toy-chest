@@ -1,6 +1,6 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use serde_json;
 use syn::{parse_macro_input, Data, DeriveInput, ItemFn, ItemStruct, Lit, LitStr, Meta, Path};
 
@@ -217,7 +217,7 @@ pub fn tea_over_struct(args: TokenStream, input: TokenStream) -> TokenStream {
     let hot_str = if hot { "hot" } else { "cold" };
     let with_str = with
         .iter()
-        .map(|path| path.segments.iter().next().unwrap().ident.as_ref())
+        .map(|path| path.to_token_stream().to_string())
         .collect::<Vec<_>>()
         .join(", ");
 
