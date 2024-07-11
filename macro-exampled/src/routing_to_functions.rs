@@ -24,14 +24,21 @@ use workspace_macros::tea;
 // }
 //
 
-#[tea(kind = "Green", hot, with(Lemon, Honey))]
-struct Picard {
-    rank: String,
-}
-
-pub async fn run_tea_making() {
+pub async fn run_tea_making_on_struct() {
     // This will call the hello function
+    #[tea(kind = "Green", hot, with(Lemon, Honey))]
+    struct Picard {
+        rank: String,
+    }
     let pcrd = Picard {
         rank: "Captain".to_string(),
     };
+}
+
+pub async fn run_tea_making_on_function() {
+    // This will call the hello function
+    #[tea(kind = "Green", hot, with(Lemon, Honey))]
+    fn make_tea() {}
+
+    make_tea();
 }

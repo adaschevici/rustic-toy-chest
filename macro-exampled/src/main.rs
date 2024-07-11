@@ -29,7 +29,10 @@ async fn main() {
         //     Box::pin(routing_to_functions::run_routing_to_functions())
         // }),
         ("Run tea making facilities", || {
-            Box::pin(routing_to_functions::run_tea_making())
+            Box::pin(routing_to_functions::run_tea_making_on_struct())
+        }),
+        ("Run tea making facilities on function", || {
+            Box::pin(routing_to_functions::run_tea_making_on_function())
         }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
