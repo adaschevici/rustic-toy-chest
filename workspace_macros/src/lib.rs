@@ -3,6 +3,7 @@ use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
 use serde_json;
 use syn::{parse_macro_input, Data, DeriveInput, ItemFn, ItemStruct, Lit, LitStr, Meta, Path};
+use tracing::info;
 
 mod to_json;
 use to_json::{ToJson, ToJsonGeneric};
@@ -180,7 +181,7 @@ pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     let output = quote! {
         #input
         fn #name() {
-            info!("Tea kind: {}", #kind);
+            println!("Tea kind: {}", #kind);
         }
     };
 

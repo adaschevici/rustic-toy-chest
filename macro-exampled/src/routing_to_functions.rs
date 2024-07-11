@@ -24,22 +24,27 @@ use workspace_macros::{tea_over_fn, tea_over_struct};
 // }
 //
 
+// #[tea_over_struct(kind = "Green", hot, with(Lemon, Honey))]
+// struct Picard {
+//     rank: String,
+// }
 pub async fn run_tea_making_on_struct() {
     // This will call the hello function
-    #[tea_over_struct(kind = "Green", hot, with(Lemon, Honey))]
-    struct Picard {
-        rank: String,
-    }
-    let pcrd = Picard {
-        rank: "Captain".to_string(),
-    };
-    pcrd.desribe_tea();
+    // let pcrd = Picard {
+    //     rank: "Captain".to_string(),
+    // };
+    // pcrd.describe_tea();
+}
+
+#[tea_over_fn(kind = "Green", hot, with(Lemon, Honey))]
+struct PicardFn {
+    rank: String,
 }
 
 pub async fn run_tea_making_on_function() {
     // This will call the hello function
-    #[tea_over_fn(kind = "Green", hot, with(Lemon, Honey))]
-    fn make_tea() {}
 
-    make_tea();
+    let pcrd = PicardFn {
+        rank: "Captain".to_string(),
+    };
 }
