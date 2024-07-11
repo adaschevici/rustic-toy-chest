@@ -1,8 +1,8 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 use serde_json;
-use syn::{parse_macro_input, Data, DeriveInput, ItemStruct, Lit, LitStr, Meta, Path};
+use syn::{parse_macro_input, Data, DeriveInput, ItemFn, Lit, LitStr, Meta, Path};
 
 mod to_json;
 use to_json::{ToJson, ToJsonGeneric};
@@ -152,7 +152,44 @@ pub fn to_json_generic_derive(input: TokenStream) -> TokenStream {
 // }
 
 #[proc_macro_attribute]
-pub fn tea(args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
+    let mut kind: Option<LitStr> = None;
+    let mut hot: bool = false;
+    let mut with: Vec<Path> = Vec::new();
+    let input = parse_macro_input!(input as ItemStruct);
+    let name = &input.ident;
+    let tea_parser = syn::meta::parser(|meta| {
+        if meta.path.is_ident("kind") {
+            kind = Some(meta.value()?.parse()?);
+            Ok(())
+        } else if meta.path.is_ident("hot") {
+            hot = true;
+            Ok(())
+        } else if meta.path.is_ident("with") {
+            meta.parse_nested_meta(|meta| {
+                with.push(meta.path);
+                Ok(())
+            })
+        } else {
+            Err(meta.error("unsupported tea property"))
+        }
+    });
+
+    parse_macro_input!(args with tea_parser);
+    eprintln!("hot={hot}");
+
+    let output = quote! {
+        #input
+        fn #name() {
+            info!("Tea kind: {}", #kind);
+        }
+    };
+
+    TokenStream::from(output)
+}
+
+#[proc_macro_attribute]
+pub fn tea_over_struct(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut kind: Option<LitStr> = None;
     let mut hot: bool = false;
     let mut with: Vec<Path> = Vec::new();
@@ -177,26 +214,11 @@ pub fn tea(args: TokenStream, input: TokenStream) -> TokenStream {
 
     parse_macro_input!(args with tea_parser);
 
-    let kind_str = kind.unwrap().value();
-    let hot_str = if hot { "hot" } else { "cold" };
-    let with_str = with
-        .iter()
-        .map(|path| path.to_token_stream().to_string())
-        .collect::<Vec<String>>()
-        .join(", ");
-
     let output = quote! {
         #input
         impl #name() {
-            pub fn describe_tea(&self) {
-                println!("Tea kind: {}", #kind_str);
-                println!("Tea temperature: {}", #hot_str);
-                println!("Tea with: {}", #with_str);
-            }
+            println!("Tea kind: {}", #kind);
         }
-        // fn #name() {
-        //     format!("Tea kind: {}", #kind);
-        // }
     };
 
     TokenStream::from(output)
