@@ -5,5 +5,10 @@ use quote::{format_ident, quote};
 use syn::ItemStruct;
 
 fn main() {
-    println!("Hello, world!");
+    let s = r#"
+        struct Point {
+            x: i32,
+            y: i32,
+        }"#;
+    let tokens = TokenStream::from_str(s).unwrap();
 }
