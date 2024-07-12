@@ -18,5 +18,5 @@ fn main() {
 
     // save our struct type for later use
     let struct_type = ast.ident.to_string();
-    println!("struct type: {}", struct_type);
+    assert_eq!(struct_type, "Point");
 }
