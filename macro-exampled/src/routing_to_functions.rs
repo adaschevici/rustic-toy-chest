@@ -1,4 +1,5 @@
-use workspace_macros::who_am_i_derive;
+use tracing::info;
+use workspace_macros::tea_over_struct;
 
 // #[route(path = "/hello", method = "GET")]
 // fn hello() {
@@ -28,6 +29,7 @@ use workspace_macros::who_am_i_derive;
 struct Picard {
     rank: String,
 }
+
 pub async fn run_tea_making_on_struct() {
     // This will call the hello function
     let pcrd = Picard {
