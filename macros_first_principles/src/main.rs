@@ -3,8 +3,10 @@ use std::str::FromStr;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use syn::ItemStruct;
+use tracing::info;
 
 fn main() {
+    tracing_subscriber::fmt::init();
     let s = r#"
         struct Point {
             x: i32,
@@ -52,4 +54,6 @@ fn main() {
             pt.#x + pt.#y
         }
     };
+    // output our function as Rust code
+    info!("{}", summation_fn);
 }
