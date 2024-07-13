@@ -152,42 +152,42 @@ pub fn to_json_generic_derive(input: TokenStream) -> TokenStream {
 //     TokenStream::from(expanded)
 // }
 
-// #[proc_macro_attribute]
-// pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
-//     let mut kind: Option<LitStr> = None;
-//     let mut hot: bool = false;
-//     let mut with: Vec<Path> = Vec::new();
-//     let input = parse_macro_input!(input as DeriveInput);
-//     let name = &input.ident;
-//     let tea_parser = syn::meta::parser(|meta| {
-//         if meta.path.is_ident("kind") {
-//             kind = Some(meta.value()?.parse()?);
-//             Ok(())
-//         } else if meta.path.is_ident("hot") {
-//             hot = true;
-//             Ok(())
-//         } else if meta.path.is_ident("with") {
-//             meta.parse_nested_meta(|meta| {
-//                 with.push(meta.path);
-//                 Ok(())
-//             })
-//         } else {
-//             Err(meta.error("unsupported tea property"))
-//         }
-//     });
-//
-//     parse_macro_input!(args with tea_parser);
-//
-//     let output = quote! {
-//         fn #name() {
-//             println!("Tea kind: {}", #kind);
-//
-//         }
-//     };
-//
-//     TokenStream::from(output)
-// }
-//
+#[proc_macro_attribute]
+pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
+    let mut kind: Option<LitStr> = None;
+    let mut hot: bool = false;
+    let mut with: Vec<Path> = Vec::new();
+    let input = parse_macro_input!(input as ItemFn);
+    let name = &input.sig.ident;
+    let tea_parser = syn::meta::parser(|meta| {
+        if meta.path.is_ident("kind") {
+            kind = Some(meta.value()?.parse()?);
+            Ok(())
+        } else if meta.path.is_ident("hot") {
+            hot = true;
+            Ok(())
+        } else if meta.path.is_ident("with") {
+            meta.parse_nested_meta(|meta| {
+                with.push(meta.path);
+                Ok(())
+            })
+        } else {
+            Err(meta.error("unsupported tea property"))
+        }
+    });
+
+    parse_macro_input!(args with tea_parser);
+
+    let output = quote! {
+        #input
+        fn #name() {
+            println!("Tea kind: {}", #kind);
+
+        }
+    };
+
+    TokenStream::from(output)
+}
 
 #[proc_macro_attribute]
 pub fn tea_over_struct(args: TokenStream, input: TokenStream) -> TokenStream {

@@ -1,5 +1,5 @@
 use tracing::info;
-use workspace_macros::tea_over_struct;
+use workspace_macros::{tea_over_fn, tea_over_struct};
 
 // #[route(path = "/hello", method = "GET")]
 // fn hello() {
@@ -38,15 +38,13 @@ pub async fn run_tea_making_on_struct() {
     pcrd.describe_tea();
 }
 
-// #[tea_over_fn(kind = "Green", hot, with(Lemon, Honey))]
-// struct PicardFn {
-//     rank: String,
-// }
-//
-// pub async fn run_tea_making_on_function() {
-//     // This will call the hello function
-//
-//     let pcrd = PicardFn {
-//         rank: "Captain".to_string(),
-//     };
-// }
+#[tea_over_fn(kind = "Green", hot, with(Lemon, Honey))]
+fn PicardFn() {
+    println!("Captain Picard is making tea");
+}
+
+pub async fn run_tea_making_on_function() {
+    // This will call the hello function
+
+    let pcrd = PicardFn();
+}
