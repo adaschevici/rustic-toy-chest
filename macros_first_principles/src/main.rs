@@ -19,4 +19,14 @@ fn main() {
     // save our struct type for later use
     let struct_type = ast.ident.to_string();
     assert_eq!(struct_type, "Point");
+
+    // we have two fields in our struct
+    assert_eq!(ast.fields.len(), 2);
+
+    // syn::Fields can be iterated over
+    let mut iter = ast.fields.iter();
+
+    let x_field = iter.next().unwrap();
+    let x_field_name = x_field.ident.as_ref().unwrap().to_string();
+    assert_eq!(x_field_name, "x");
 }
