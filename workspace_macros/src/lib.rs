@@ -1,6 +1,6 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
+use quote::{format_ident, quote, ToTokens};
 use serde_json;
 use syn::{parse_macro_input, Data, DeriveInput, ItemFn, ItemStruct, Lit, LitStr, Meta, Path};
 use tracing::info;
@@ -159,6 +159,7 @@ pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut with: Vec<Path> = Vec::new();
     let input = parse_macro_input!(input as ItemFn);
     let name = &input.sig.ident;
+    let block = &input.block;
     let tea_parser = syn::meta::parser(|meta| {
         if meta.path.is_ident("kind") {
             kind = Some(meta.value()?.parse()?);
@@ -178,11 +179,12 @@ pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
 
     parse_macro_input!(args with tea_parser);
 
+    let newfunc = format_ident!("{}_huhu", name);
     let output = quote! {
         #input
-        fn #name() {
+        fn #newfunc() {
             println!("Tea kind: {}", #kind);
-
+            #block;
         }
     };
 

@@ -39,12 +39,13 @@ pub async fn run_tea_making_on_struct() {
 }
 
 #[tea_over_fn(kind = "Green", hot, with(Lemon, Honey))]
-fn PicardFn() {
+fn picard_fe() {
     println!("Captain Picard is making tea");
 }
 
 pub async fn run_tea_making_on_function() {
     // This will call the hello function
 
-    let pcrd = PicardFn();
+    let pcrd = picard_fe();
+    let pcrd2 = picard_fe_huhu();
 }
