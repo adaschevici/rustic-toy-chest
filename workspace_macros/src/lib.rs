@@ -188,6 +188,7 @@ pub fn to_json_generic_derive(input: TokenStream) -> TokenStream {
 //     TokenStream::from(output)
 // }
 //
+
 #[proc_macro_attribute]
 pub fn tea_over_struct(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut kind: Option<LitStr> = None;
@@ -213,8 +214,9 @@ pub fn tea_over_struct(args: TokenStream, input: TokenStream) -> TokenStream {
     });
 
     parse_macro_input!(args with tea_parser);
+    // panic!("name: {:?}", name);
 
-    let kind_str = kind.unwrap();
+    let kind_str = kind.unwrap().to_token_stream().to_string();
     let hot_str = if hot { "hot" } else { "cold" };
     let with_str = with
         .iter()
@@ -224,11 +226,11 @@ pub fn tea_over_struct(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let output = quote! {
         #input
-        impl #name() {
+        impl #name {
             pub fn describe_tea(&self) {
-                println!("Tea kind: {}", #kind_str);
-                println!("Tea temperature: {}", #hot_str);
-                println!("Tea with: {}", #with_str);
+                info!("Tea kind: {}", #kind_str);
+                info!("Tea temperature: {}", #hot_str);
+                info!("Tea with: {}", #with_str);
             }
         }
     };
