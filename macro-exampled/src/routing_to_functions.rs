@@ -1,5 +1,5 @@
 use tracing::info;
-use workspace_macros::{tea_over_fn, tea_over_struct};
+use workspace_macros::{call_fn, tea_over_fn, tea_over_struct};
 
 // #[route(path = "/hello", method = "GET")]
 // fn hello() {
@@ -10,20 +10,27 @@ use workspace_macros::{tea_over_fn, tea_over_struct};
 // fn goodbye() {
 //     println!("Goodbye, world!");
 // }
-//
-// pub async fn run_routing_to_functions() {
-//     // This will call the hello function
-//     #[call_fn(fn = "hello")]
-//     fn my_function() {}
-//
-//     // This will call the goodbye function
-//     #[call_fn(fn = "goodbye")]
-//     fn another_function() {}
-//
-//     my_function();
-//     another_function();
-// }
-//
+
+fn hello() {
+    println!("Hello, world!");
+}
+
+fn goodbye() {
+    println!("Goodbye, world!");
+}
+
+pub async fn run_routing_to_functions() {
+    // This will call the hello function
+    #[call_fn(fn = "hello")]
+    fn my_function() {}
+
+    // This will call the goodbye function
+    #[call_fn(fn = "goodbye")]
+    fn another_function() {}
+
+    my_function();
+    another_function();
+}
 
 #[tea_over_struct(kind = "Green", hot, with(Lemon, Honey))]
 struct Picard {

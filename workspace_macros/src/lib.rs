@@ -110,47 +110,47 @@ pub fn to_json_generic_derive(input: TokenStream) -> TokenStream {
 //     TokenStream::from(expanded)
 // }
 
-// #[proc_macro_attribute]
-// pub fn call_fn(args: TokenStream, input: TokenStream) -> TokenStream {
-//     // Parse the attribute arguments
-//     let args = parse_macro_input!(args as AttributeArgs);
-//
-//     // Parse the function the attribute is applied to
-//     let input = parse_macro_input!(input as ItemFn);
-//
-//     // Extract the function name from the attribute arguments
-//     let mut fn_to_call = None;
-//
-//     for arg in args {
-//         if let NestedMeta::Meta(Meta::NameValue(meta_name_value)) = arg {
-//             if meta_name_value.path.is_ident("fn") {
-//                 fn_to_call = Some(meta_name_value.value()?.parse()?);
-//             }
-//         }
-//     }
-//
-//     // Match the function name to the appropriate function call
-//     let expanded = match Some(quote!(#fn_to_call).to_string().as_str()) {
-//         Some("hello") => quote! {
-//             #input
-//             fn call_fn() {
-//                 hello();
-//             }
-//         },
-//         Some("goodbye") => quote! {
-//             #input
-//             fn call_fn() {
-//                 goodbye();
-//             }
-//         },
-//         _ => quote! {
-//             #input
-//             compile_error!("Unknown function specified in the attribute");
-//         },
-//     };
-//
-//     TokenStream::from(expanded)
-// }
+#[proc_macro_attribute]
+pub fn call_fn(args: TokenStream, input: TokenStream) -> TokenStream {
+    // Parse the attribute arguments
+    let args = parse_macro_input!(args as AttributeArgs);
+
+    // Parse the function the attribute is applied to
+    let input = parse_macro_input!(input as ItemFn);
+
+    // Extract the function name from the attribute arguments
+    let mut fn_to_call = None;
+
+    for arg in args {
+        if let NestedMeta::Meta(Meta::NameValue(meta_name_value)) = arg {
+            if meta_name_value.path.is_ident("fn") {
+                fn_to_call = Some(meta_name_value.value()?.parse()?);
+            }
+        }
+    }
+
+    // Match the function name to the appropriate function call
+    let expanded = match Some(quote!(#fn_to_call).to_string().as_str()) {
+        Some("hello") => quote! {
+            #input
+            fn call_fn() {
+                hello();
+            }
+        },
+        Some("goodbye") => quote! {
+            #input
+            fn call_fn() {
+                goodbye();
+            }
+        },
+        _ => quote! {
+            #input
+            compile_error!("Unknown function specified in the attribute");
+        },
+    };
+
+    TokenStream::from(expanded)
+}
 
 #[proc_macro_attribute]
 pub fn tea_over_fn(args: TokenStream, input: TokenStream) -> TokenStream {
