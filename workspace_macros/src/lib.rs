@@ -112,43 +112,31 @@ pub fn to_json_generic_derive(input: TokenStream) -> TokenStream {
 
 #[proc_macro_attribute]
 pub fn call_fn(args: TokenStream, input: TokenStream) -> TokenStream {
-    tracing_subscriber::fmt::init();
     // Parse the attribute arguments
 
     // Parse the function the attribute is applied to
     let input = parse_macro_input!(input as ItemFn);
 
     // Extract the function name from the attribute arguments
-    let mut fn_to_call = None;
+    let mut fn_to_call: Option<Path> = None;
 
     let fn_route_parser = syn::meta::parser(|meta| {
         if meta.path.is_ident("fn") {
-            fn_to_call = Some(meta.value()?);
-            info!("fn_to_call: {:?}", fn_to_call);
+            fn_to_call = Some(meta.value()?.parse()?);
             Ok(())
         } else {
             Err(meta.error("unsupported call_fn property"))
         }
     });
+    parse_macro_input!(args with fn_route_parser);
+    // panic!("fn_to_call: {:?}", fn_to_call);
 
     // Match the function name to the appropriate function call
-    let expanded = match fn_to_call.as_deref() {
-        Some("hello") => quote! {
-            #input
-            fn call_fn() {
-                hello();
-            }
-        },
-        Some("goodbye") => quote! {
-            #input
-            fn call_fn() {
-                goodbye();
-            }
-        },
-        _ => quote! {
-            #input
-            compile_error!("Unknown function specified in the attribute");
-        },
+    let expanded = quote! {
+        #input
+        fn call_fn() {
+            #fn_to_call();
+        }
     };
 
     TokenStream::from(expanded)

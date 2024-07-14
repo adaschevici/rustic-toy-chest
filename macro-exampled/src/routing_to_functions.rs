@@ -21,11 +21,11 @@ fn goodbye() {
 
 pub async fn run_routing_to_functions() {
     // This will call the hello function
-    #[call_fn(fn = "hello")]
+    #[call_fn(fn = hello)]
     fn my_function() {}
 
     // This will call the goodbye function
-    #[call_fn(fn = "goodbye")]
+    // #[call_fn(fn = goodbye)]
     fn another_function() {}
 
     my_function();
