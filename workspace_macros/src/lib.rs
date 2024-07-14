@@ -134,9 +134,7 @@ pub fn call_fn(args: TokenStream, input: TokenStream) -> TokenStream {
     // Match the function name to the appropriate function call
     let expanded = quote! {
         #input
-        fn call_fn() {
-            #fn_to_call();
-        }
+        #fn_to_call();
     };
 
     TokenStream::from(expanded)
