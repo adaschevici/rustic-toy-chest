@@ -60,9 +60,11 @@ async fn navigate_to_page() {
     }
 }
 
-async fn subscribe_to_event() {}
-
-async fn list_targets() {}
+async fn subscribe_to_event() {
+    let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
+    let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
+    info!("Connecting to {}", url);
+}
 
 async fn get_tabs() {
     // Connect to the WebSocket server
@@ -87,10 +89,12 @@ async fn get_tabs() {
 }
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
     // Define the list of functions
     let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
         ("Navigate to example.com", || Box::pin(navigate_to_page())),
         ("List tabs", || Box::pin(get_tabs())),
+        ("Subscribe to event", || Box::pin(subscribe_to_event())),
     ];
 
     // Create a vector of function names
