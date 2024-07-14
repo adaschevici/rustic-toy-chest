@@ -1,14 +1,16 @@
+use futures::future::BoxFuture;
 use inquire::Select;
+use std::error::Error;
 use tracing::info;
+
+mod perform_basic_request;
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
     let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> =
-        vec![("Run initial macro example", || {
-            Box::pin(async {
-                info!("Running initial macro example");
-            })
+        vec![("Run simple request", || {
+            Box::pin(perform_basic_request::perform_basic_request())
         })];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
