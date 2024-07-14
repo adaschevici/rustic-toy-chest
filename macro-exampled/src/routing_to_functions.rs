@@ -12,21 +12,25 @@ use workspace_macros::{call_fn, tea_over_fn, tea_over_struct};
 // }
 
 fn hello() {
-    println!("Hello, world!");
+    info!("Hello, world!");
 }
 
 fn goodbye() {
-    println!("Goodbye, world!");
+    info!("Goodbye, world!");
 }
 
 pub async fn run_routing_to_functions() {
     // This will call the hello function
     #[call_fn(fn = hello)]
-    fn my_function() {}
+    fn my_function() {
+        info!("My function");
+    }
 
     // This will call the goodbye function
     #[call_fn(fn = goodbye)]
-    fn another_function() {}
+    fn another_function() {
+        info!("Another function");
+    }
 
     my_function();
     another_function();
