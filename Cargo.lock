@@ -2442,6 +2442,8 @@ name = "futures-custom"
 version = "0.1.0"
 dependencies = [
  "futures 0.3.30",
+ "inquire",
+ "reqwest 0.12.5",
  "tokio",
  "tracing",
  "tracing-subscriber",
