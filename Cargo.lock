@@ -3723,6 +3723,7 @@ dependencies = [
 name = "lockfree"
 version = "0.1.0"
 dependencies = [
+ "crossbeam",
  "futures 0.3.30",
  "tokio",
  "tracing",
