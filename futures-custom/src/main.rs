@@ -3,15 +3,20 @@ use inquire::Select;
 use std::error::Error;
 use tracing::info;
 
+mod custom_future;
 mod perform_basic_request;
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
-    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> =
-        vec![("Run simple request", || {
+    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
+        ("Run simple request", || {
             Box::pin(perform_basic_request::perform_basic_request())
-        })];
+        }),
+        ("Run custom future", || {
+            Box::pin(custom_future::use_custom_future())
+        }),
+    ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
     // Prompt the user to select a function
