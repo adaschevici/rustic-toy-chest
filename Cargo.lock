@@ -3725,6 +3725,7 @@ version = "0.1.0"
 dependencies = [
  "crossbeam",
  "futures 0.3.30",
+ "inquire",
  "tokio",
  "tracing",
  "tracing-subscriber",
