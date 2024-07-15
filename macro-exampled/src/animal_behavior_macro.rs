@@ -1,4 +1,4 @@
-use tracing::info;
+use tracing::{info, warn};
 
 macro_rules! animal_behaviour_expr {
     ($animal:expr, $behaviour:expr) => {
@@ -118,14 +118,12 @@ macro_rules! define_config_w_validation {
 
             pub fn check_deprecated(&self) {
                 info!("Checking for deprecated fields...");
-                // $(
-                //     {
-                //         if let Some(deprecated_msg?) = $($dep)? {
-                //             println!("Warning: Field `{}` is deprecated. {}", stringify!($name), deprecated_msg);
-                //             println!("Use `{}` instead.", stringify!($($new_field)?));
-                //         }
-                //     }
-                // )*
+                $(
+                    $(
+                        warn!("Warning: Field `{}` is deprecated. {}", stringify!($name), $dep);
+                        warn!("Use `{}` instead.", stringify!($new_field));
+                    )?
+                )*
             }
         }
     };
@@ -171,6 +169,7 @@ pub async fn run_animal_behavior_macro() {
     }
     let config = Config::default();
     info!("Validated config: {:?}", config.validate());
+    info!("Checked deprecated fields: {:?}", config.check_deprecated());
     info!("config: {:?}", config);
 
     // Check for deprecated fields
