@@ -4,6 +4,7 @@ use std::error::Error;
 use tracing::info;
 
 mod custom_future;
+mod error_handling;
 mod perform_basic_request;
 
 #[tokio::main]
@@ -15,6 +16,9 @@ async fn main() {
         }),
         ("Run custom future", || {
             Box::pin(custom_future::use_custom_future())
+        }),
+        ("Run error handling", || {
+            Box::pin(error_handling::read_file_with_error_handling())
         }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
