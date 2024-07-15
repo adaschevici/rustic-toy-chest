@@ -8,12 +8,16 @@ mod non_locker;
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> =
-        vec![("Run initial macro example", || {
+    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
+        ("Run initial macro example", || {
             Box::pin(async {
                 info!("Running initial noop option");
             })
-        })];
+        }),
+        ("Run non-locker-stack example", || {
+            Box::pin(non_locker::run_nonlocker_stack_ops())
+        }),
+    ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
     // Prompt the user to select a function
