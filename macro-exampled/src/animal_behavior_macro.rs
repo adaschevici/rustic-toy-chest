@@ -89,14 +89,26 @@ macro_rules! define_config_w_validation {
         // Validation implementation
         impl Config {
             pub fn validate(&self) -> Result<(), String> {
+                info!("Validating configuration...");
                 let mut errors = vec![];
+                // info!("Validator: {:?}", stringify!($validate));
+
                 $(
-                    if let Some(validation_fn) = $($validate)? {
-                        if let Err(e) = validation_fn(&self.$name) {
+                    $(
+                        if let Err(e) = $validate(&self.$name) {
                             errors.push(format!("Field `{}`: {}", stringify!($name), e));
                         }
-                    }
+                    )?
                 )*
+
+
+                // if let Some(validation_fn) = $validate {
+                //     $(if let Err(e) = validation_fn(&self.$name) {
+                //         errors.push(format!("Field `{}`: {}", stringify!($name), e));
+                //     })*
+                // }
+                //
+
                 if errors.is_empty() {
                     Ok(())
                 } else {
@@ -105,12 +117,15 @@ macro_rules! define_config_w_validation {
             }
 
             pub fn check_deprecated(&self) {
-                $(
-                    if let Some(deprecated_msg) = $($dep)? {
-                        println!("Warning: Field `{}` is deprecated. {}", stringify!($name), deprecated_msg);
-                        println!("Use `{}` instead.", stringify!($($new_field)?));
-                    }
-                )*
+                info!("Checking for deprecated fields...");
+                // $(
+                //     {
+                //         if let Some(deprecated_msg?) = $($dep)? {
+                //             println!("Warning: Field `{}` is deprecated. {}", stringify!($name), deprecated_msg);
+                //             println!("Use `{}` instead.", stringify!($($new_field)?));
+                //         }
+                //     }
+                // )*
             }
         }
     };
@@ -152,9 +167,10 @@ pub async fn run_animal_behavior_macro() {
 
         /// A field with custom validation.
         #[validate = |value: &usize| if *value > 100 { Err("must be 100 or less") } else { Ok(()) }]
-        (max_connections: usize = 50),
+        (max_connections: usize = 150),
     }
     let config = Config::default();
+    info!("Validated config: {:?}", config.validate());
     info!("config: {:?}", config);
 
     // Check for deprecated fields
