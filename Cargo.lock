@@ -3720,6 +3720,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "lockfree"
+version = "0.1.0"
+dependencies = [
+ "futures 0.3.30",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "log"
 version = "0.4.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
