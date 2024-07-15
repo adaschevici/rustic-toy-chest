@@ -51,6 +51,61 @@ macro_rules! define_config {
     };
 }
 
+macro_rules! define_config_w_validation {
+    ($(
+        $(#[doc = $doc:literal])?
+        $(#[deprecated($dep:literal, $new_field:ident)])?
+        $(#[validate = $validate:expr])?
+        ($name:ident: $ty:ty = $default:expr),
+    )*) => {
+        // Struct definition
+        #[derive(Debug)]
+        pub struct Config {
+            $(
+                $(#[doc = $doc])?
+                pub $name: $ty,
+            )*
+        }
+
+        // Default values module
+        mod defaults {
+            use super::*;
+            $(
+                pub fn $name() -> $ty { $default }
+            )*
+        }
+
+        // Implement Default trait
+        impl Default for Config {
+            fn default() -> Self {
+                Self {
+                    $(
+                        $name: defaults::$name(),
+                    )*
+                }
+            }
+        }
+
+        // Validation module
+        impl Config {
+            pub fn validate(&self) -> Result<(), String> {
+                let mut errors = Vec::new();
+                $(
+                    if let Some(validation_fn) = $validate {
+                        if let Err(err) = validation_fn(&self.$name) {
+                            errors.push(format!("{}: {}", stringify!($name), err));
+                        }
+                    }
+                )*
+                if errors.is_empty() {
+                    Ok(())
+                } else {
+                    Err(errors.join("\n"))
+                }
+            }
+        }
+    };
+}
 pub async fn run_animal_behavior_macro() {
     animal_behaviour_expr!("dog", "barking").await;
     animal_behaviour!(cat, "meowing");
