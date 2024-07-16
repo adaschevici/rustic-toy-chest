@@ -8,7 +8,11 @@ struct Node<T> {
     data: T,
     next: Atomic<Node<T>>,
 }
-
+impl<T> Node<T> {
+    fn get_data(&self) -> &T {
+        &self.data
+    }
+}
 struct LockFreeQueue<T> {
     head: Atomic<Node<T>>,
     tail: Atomic<Node<T>>,
@@ -59,7 +63,6 @@ impl<T> LockFreeQueue<T> {
 
     fn dequeue(&self) -> Option<T> {
         let guard = epoch::pin();
-        let mock_data = unsafe { std::mem::zeroed() };
         loop {
             let head = self.head.load(Ordering::Acquire, &guard);
             let tail = self.tail.load(Ordering::Acquire, &guard);
@@ -82,7 +85,8 @@ impl<T> LockFreeQueue<T> {
                         unsafe {
                             guard.defer_destroy(head);
                         }
-                        return Some(unsafe { std::ptr::read(mock_data) });
+                        let return_data = unsafe { next.deref().get_data() };
+                        return Some(unsafe { std::ptr::read(return_data) });
                     }
                 }
             }
