@@ -85,8 +85,7 @@ impl<T> LockFreeQueue<T> {
                         unsafe {
                             guard.defer_destroy(head);
                         }
-                        let return_data = unsafe { next.deref().get_data() };
-                        return Some(unsafe { std::ptr::read(return_data) });
+                        return Some(unsafe { std::ptr::read(next.deref().get_data().as_raw()) });
                     }
                 }
             }
