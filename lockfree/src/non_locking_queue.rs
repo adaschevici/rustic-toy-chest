@@ -59,6 +59,7 @@ impl<T> LockFreeQueue<T> {
 
     fn dequeue(&self) -> Option<T> {
         let guard = epoch::pin();
+        let mock_data = unsafe { std::mem::zeroed() };
         loop {
             let head = self.head.load(Ordering::Acquire, &guard);
             let tail = self.tail.load(Ordering::Acquire, &guard);
@@ -72,6 +73,7 @@ impl<T> LockFreeQueue<T> {
                     .unwrap();
             } else {
                 if let Some(next) = unsafe { next.as_ref() } {
+                    let next = next.next.load(Ordering::Acquire, &guard);
                     if self
                         .head
                         .compare_exchange(head, next, Ordering::Release, Ordering::Acquire, &guard)
@@ -80,7 +82,7 @@ impl<T> LockFreeQueue<T> {
                         unsafe {
                             guard.defer_destroy(head);
                         }
-                        return Some(unsafe { std::ptr::read(&next.data) });
+                        return Some(unsafe { std::ptr::read(mock_data) });
                     }
                 }
             }
