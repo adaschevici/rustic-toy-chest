@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 crossbeam = { version = "0.8.4", features = ["crossbeam-epoch"] }
+crossbeam-epoch = "0.9.18"
 futures = "0.3.30"
 inquire = "0.7.5"
 tokio = { version = "1.38.0", features = ["full"] }

@@ -2,7 +2,8 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
-mod non_locker;
+mod non_locking_queue;
+mod non_locking_stack;
 
 #[tokio::main]
 async fn main() {
@@ -15,7 +16,10 @@ async fn main() {
             })
         }),
         ("Run non-locker-stack example", || {
-            Box::pin(non_locker::run_nonlocker_stack_ops())
+            Box::pin(non_locking_stack::run_non_locking_stack_ops())
+        }),
+        ("Run non-locker-queue example", || {
+            Box::pin(non_locking_queue::run_non_locking_queue_ops())
         }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
