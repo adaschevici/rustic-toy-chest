@@ -3727,6 +3727,7 @@ dependencies = [
  "crossbeam-epoch",
  "futures 0.3.30",
  "inquire",
+ "rand",
  "tokio",
  "tracing",
  "tracing-subscriber",
