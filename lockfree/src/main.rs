@@ -4,6 +4,7 @@ use tracing::info;
 
 mod non_locking_queue;
 mod non_locking_stack;
+mod threaded_samples;
 
 #[tokio::main]
 async fn main() {
@@ -20,6 +21,9 @@ async fn main() {
         }),
         ("Run non-locker-queue example", || {
             Box::pin(non_locking_queue::run_non_locking_queue_ops())
+        }),
+        ("Run threaded example", || {
+            Box::pin(threaded_samples::run_threaded_ops())
         }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
