@@ -1,6 +1,7 @@
 use std::thread;
+use tracing::info;
 
-async fn run_threaded_ops() {
+pub async fn run_threaded_ops() {
     let mut handles = vec![];
     for i in 0..10 {
         let handle = thread::spawn(move || {
