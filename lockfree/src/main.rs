@@ -28,6 +28,9 @@ async fn main() {
         ("Run threaded with critical section example", || {
             Box::pin(threading_samples::run_threaded_with_critical_section())
         }),
+        ("Run threaded with producer-consumer example", || {
+            Box::pin(threading_samples::run_pub_sub())
+        }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
