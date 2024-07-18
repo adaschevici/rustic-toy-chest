@@ -31,6 +31,9 @@ async fn main() {
         ("Run threaded with producer-consumer example", || {
             Box::pin(threading_samples::run_pub_sub())
         }),
+        ("Run threaded pub-sub with channels example", || {
+            Box::pin(threading_samples::run_pub_sub_chan())
+        }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 

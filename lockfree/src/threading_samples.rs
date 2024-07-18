@@ -86,32 +86,41 @@ pub async fn run_pub_sub() {
     info!("Pub sub complete");
 }
 
-// pub async fn run_pub_sub() {
-//     info!("Running pub sub");
-//     let q: Arc<ArrayQueue<u32>> = Arc::new(ArrayQueue::new(100));
-//     let mut producer_handles: Vec<thread::JoinHandle<()>> = Vec::new();
-//     let mut consumer_handles: Vec<thread::JoinHandle<()>> = Vec::new();
-//     for i in 1..10 {
-//         producer_handles.push(run_producer(q.clone(), i).await);
-//     }
-//
-//     let mut value = q.pop();
-//     for i in 1..10 {
-//         consumer_handles.push(thread::spawn(move || {
-//             info!("Hello from consumer thread {} - popping...!", i);
-//             for _ in 0..20 {
-//                 value.expect("popping failed");
-//             }
-//         }));
-//     }
-//
-//     producer_handles.into_iter().for_each(|handle| {
-//         handle.join().expect("Unable to join producer thread");
-//     });
-//
-//     consumer_handles.into_iter().for_each(|handle| {
-//         handle.join().expect("Unable to join consumer thread");
-//     });
-//
-//     info!("Pub sub complete");
-// }
+async fn run_producer_chan(s: Sender<u32>) -> thread::JoinHandle<()> {
+    thread::spawn(move || {
+        info!("Hello from producer thread - pushing...!");
+        for i in 0..1000 {
+            s.send(i).expect("Unable to send");
+        }
+    })
+}
+
+async fn run_consumer_chan(r: Receiver<u32>) -> thread::JoinHandle<()> {
+    thread::spawn(move || {
+        let mut i = 0;
+        info!("Hello from consumer thread - popping...!");
+        loop {
+            if let Err(_) = r.recv() {
+                info!("Consumer received {} messages", i);
+                break;
+            }
+            i += 1;
+        }
+    })
+}
+
+pub async fn run_pub_sub_chan() {
+    info!("Running pub sub with channels");
+    let (s, r) = unbounded();
+
+    for i in 1..5 {
+        run_producer_chan(s.clone(), i);
+    }
+    drop(s);
+
+    for i in 1..5 {
+        run_consumer_chan(r.clone(), i);
+    }
+
+    info!("Pub sub with channels complete");
+}
