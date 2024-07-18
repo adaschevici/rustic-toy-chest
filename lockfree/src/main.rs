@@ -25,6 +25,9 @@ async fn main() {
         ("Run threaded example", || {
             Box::pin(threading_samples::run_threaded_ops())
         }),
+        ("Run threaded with critical section example", || {
+            Box::pin(threading_samples::run_threaded_with_critical_section())
+        }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
