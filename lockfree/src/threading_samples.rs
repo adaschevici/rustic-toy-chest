@@ -94,7 +94,7 @@ async fn run_producer_chan(s: Sender<u32>, num: u32) -> task::JoinHandle<()> {
     task::spawn(async move {
         info!("Hello from producer thread - pushing...!");
         for i in 0..1000 {
-            s.send(i).await.expect("Unable to send");
+            s.send(i).expect("Unable to send");
         }
     })
 }
@@ -123,7 +123,7 @@ pub async fn run_pub_sub_chan() {
     let (s, r) = unbounded_channel();
 
     for i in 1..5 {
-        run_producer_chan(s, i);
+        run_producer_chan(s.clone(), i);
     }
     drop(s);
 
