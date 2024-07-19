@@ -2,6 +2,10 @@ use crossbeam::atomic::AtomicCell;
 use crossbeam::queue::ArrayQueue;
 use std::sync::Arc;
 use std::thread;
+use tokio::sync::mpsc::{
+    unbounded_channel, UnboundedReceiver as Receiver, UnboundedSender as Sender,
+};
+use tokio::task;
 use tracing::info;
 
 pub async fn run_threaded_ops() {
@@ -86,40 +90,45 @@ pub async fn run_pub_sub() {
     info!("Pub sub complete");
 }
 
-async fn run_producer_chan(s: Sender<u32>) -> thread::JoinHandle<()> {
-    thread::spawn(move || {
+async fn run_producer_chan(s: Sender<u32>, num: u32) -> task::JoinHandle<()> {
+    task::spawn(async move {
         info!("Hello from producer thread - pushing...!");
         for i in 0..1000 {
-            s.send(i).expect("Unable to send");
+            s.send(i).await.expect("Unable to send");
         }
     })
 }
 
-async fn run_consumer_chan(r: Receiver<u32>) -> thread::JoinHandle<()> {
-    thread::spawn(move || {
+async fn run_consumer_chan(mut r: Receiver<u32>, num: u32) -> task::JoinHandle<()> {
+    task::spawn(async move {
         let mut i = 0;
         info!("Hello from consumer thread - popping...!");
         loop {
-            if let Err(_) = r.recv() {
-                info!("Consumer received {} messages", i);
-                break;
+            let message = r.recv().await;
+            match message {
+                Some(_) => {
+                    i += 1;
+                }
+                None => {
+                    info!("Consumer received {} messages", i);
+                    break;
+                }
             }
-            i += 1;
         }
     })
 }
 
 pub async fn run_pub_sub_chan() {
     info!("Running pub sub with channels");
-    let (s, r) = unbounded();
+    let (s, r) = unbounded_channel();
 
     for i in 1..5 {
-        run_producer_chan(s.clone(), i);
+        run_producer_chan(s, i);
     }
     drop(s);
 
     for i in 1..5 {
-        run_consumer_chan(r.clone(), i);
+        run_consumer_chan(r, i);
     }
 
     info!("Pub sub with channels complete");
