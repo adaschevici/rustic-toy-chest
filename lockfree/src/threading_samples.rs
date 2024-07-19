@@ -5,6 +5,7 @@ use std::thread;
 use tokio::sync::mpsc::{
     unbounded_channel, UnboundedReceiver as Receiver, UnboundedSender as Sender,
 };
+use tokio::sync::Mutex;
 use tokio::task;
 use tracing::info;
 
@@ -99,18 +100,21 @@ async fn run_producer_chan(s: Sender<u32>, num: u32) -> task::JoinHandle<()> {
     })
 }
 
-async fn run_consumer_chan(mut r: Receiver<u32>, num: u32) -> task::JoinHandle<()> {
+async fn run_consumer_chan(r: Arc<Mutex<Receiver<u32>>>, num: u32) -> task::JoinHandle<()> {
     task::spawn(async move {
         let mut i = 0;
-        info!("Hello from consumer thread - popping...!");
+        println!("Hello from consumer thread - popping...!");
         loop {
-            let message = r.recv().await;
+            let message = {
+                let mut receiver = r.lock().await;
+                receiver.recv().await
+            };
             match message {
                 Some(_) => {
                     i += 1;
                 }
                 None => {
-                    info!("Consumer received {} messages", i);
+                    println!("Consumer received {} messages", i);
                     break;
                 }
             }
@@ -120,15 +124,30 @@ async fn run_consumer_chan(mut r: Receiver<u32>, num: u32) -> task::JoinHandle<(
 
 pub async fn run_pub_sub_chan() {
     info!("Running pub sub with channels");
-    let (s, r) = unbounded_channel();
+    let (s, r): (Sender<u32>, Receiver<u32>) = unbounded_channel();
+    let r = Arc::new(Mutex::new(r));
 
+    let mut producer_handles = Vec::new();
     for i in 1..5 {
-        run_producer_chan(s.clone(), i);
+        let handle = run_producer_chan(s.clone(), i).await;
+        producer_handles.push(handle);
     }
+
     drop(s);
 
+    let mut consumer_handles = Vec::new();
     for i in 1..5 {
-        run_consumer_chan(r, i);
+        let rx = Arc::clone(&r);
+        let handle = run_consumer_chan(rx, i).await;
+        consumer_handles.push(handle);
+    }
+
+    for handle in producer_handles {
+        handle.await.unwrap();
+    }
+
+    for handle in consumer_handles {
+        handle.await.unwrap();
     }
 
     info!("Pub sub with channels complete");
