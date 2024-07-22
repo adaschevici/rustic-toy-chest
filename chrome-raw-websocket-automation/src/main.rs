@@ -80,6 +80,10 @@ async fn subscribe_to_event() {
         .await;
     let message = read.next().await.ok_or("No response");
     info!("Received message: {:?}", message);
+    let response: serde_json::Value =
+        serde_json::from_str(message.unwrap().unwrap().to_text().unwrap())
+            .expect("Unable to parse JSON");
+    info!("Response: {:?}", response);
 }
 
 async fn get_tabs() {
