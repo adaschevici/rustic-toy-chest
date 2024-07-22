@@ -78,6 +78,8 @@ async fn subscribe_to_event() {
             .to_string(),
         ))
         .await;
+    let message = read.next().await.ok_or("No response");
+    info!("Received message: {:?}", message);
 }
 
 async fn get_tabs() {
@@ -103,7 +105,7 @@ async fn get_tabs() {
 }
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt().pretty().init();
     // Define the list of functions
     let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
         ("Navigate to example.com", || Box::pin(navigate_to_page())),
