@@ -64,6 +64,19 @@ async fn subscribe_to_event() {
     let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
     let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
     info!("Connecting to {}", url);
+    // Connect to the WebSocket server
+    let (ws_stream, _) = connect_async(websocket_url)
+        .await
+        .expect("Failed to connect");
+    socket
+        .send(Message::Text(
+            json!({
+                "id": 1,
+                "method": "Target.getTargets"
+            })
+            .to_string(),
+        ))
+        .await?;
 }
 
 async fn get_tabs() {
