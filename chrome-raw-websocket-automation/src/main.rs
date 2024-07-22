@@ -89,6 +89,21 @@ async fn subscribe_to_event() {
         .and_then(|arr| arr.iter().find(|target| target["type"] == "page"))
         .ok_or("No page target found");
     info!("Target: {:?}", target);
+
+    let target_infos = response["result"]["targetInfos"]
+        .as_array()
+        .ok_or("No targetInfos array");
+
+    let target_infos = target_infos.unwrap();
+
+    // Iterate over each target and print the URL
+    for target in target_infos {
+        if let Some(url) = target["url"].as_str() {
+            info!("Target URL: {}", url);
+        } else {
+            info!("No URL found for target");
+        }
+    }
 }
 
 async fn get_tabs() {
