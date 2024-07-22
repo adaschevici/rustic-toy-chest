@@ -61,14 +61,15 @@ async fn navigate_to_page() {
 }
 
 async fn subscribe_to_event() {
-    let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
+    let websocket_url = "ws://127.0.0.1:9222/devtools/browser/443ae8d0-81a8-4340-8961-1f15d019ba76";
     let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
     info!("Connecting to {}", url);
     // Connect to the WebSocket server
-    let (ws_stream, _) = connect_async(websocket_url)
+    let (mut ws_stream, _) = connect_async(websocket_url)
         .await
         .expect("Failed to connect");
-    socket
+    let (mut write, mut read) = ws_stream.split();
+    write
         .send(Message::Text(
             json!({
                 "id": 1,
@@ -76,7 +77,7 @@ async fn subscribe_to_event() {
             })
             .to_string(),
         ))
-        .await?;
+        .await;
 }
 
 async fn get_tabs() {
