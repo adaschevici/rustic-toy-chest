@@ -84,6 +84,11 @@ async fn subscribe_to_event() {
         serde_json::from_str(message.unwrap().unwrap().to_text().unwrap())
             .expect("Unable to parse JSON");
     info!("Response: {:?}", response);
+    let target = response["result"]["targetInfos"]
+        .as_array()
+        .and_then(|arr| arr.iter().find(|target| target["type"] == "page"))
+        .ok_or("No page target found");
+    info!("Target: {:?}", target);
 }
 
 async fn get_tabs() {
