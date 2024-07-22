@@ -34,6 +34,9 @@ async fn main() {
         ("Run threaded pub-sub with channels example", || {
             Box::pin(threading_samples::run_pub_sub_chan())
         }),
+        ("Run waitgroup example", || {
+            Box::pin(threading_samples::run_waitgroup())
+        }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 

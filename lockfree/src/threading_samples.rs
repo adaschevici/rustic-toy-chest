@@ -1,5 +1,7 @@
 use crossbeam::atomic::AtomicCell;
 use crossbeam::queue::ArrayQueue;
+use crossbeam::sync::WaitGroup;
+use rand::{self, Rng};
 use std::sync::Arc;
 use std::thread;
 use tokio::sync::mpsc::{
@@ -151,4 +153,30 @@ pub async fn run_pub_sub_chan() {
     }
 
     info!("Pub sub with channels complete");
+}
+
+async fn do_work(thread_num: i32) {
+    let num = rand::thread_rng().gen_range(100..500);
+    thread::sleep(std::time::Duration::from_millis(num));
+    let mut sum = 0;
+    for i in 0..10 {
+        sum += sum + num * i;
+    }
+    println!(
+        "thread {} calculated sum: {}, num: {}",
+        thread_num, sum, num
+    );
+    thread::sleep(std::time::Duration::from_millis(num));
+}
+
+pub async fn run_waitgroup() {
+    let wg = WaitGroup::new();
+    for i in 0..50 {
+        let wg_clone = wg.clone();
+        tokio::spawn(async move {
+            do_work(i).await;
+            drop(wg_clone);
+        });
+    }
+    wg.wait();
 }
