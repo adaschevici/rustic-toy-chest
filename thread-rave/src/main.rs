@@ -2,16 +2,20 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod track_racers;
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> =
-        vec![("Run noop operation", || {
+    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
+        ("Run noop operation", || {
             Box::pin(async {
                 info!("Running initial noop option");
             })
-        })];
+        }),
+        ("Run rayon race", || Box::pin(track_racers::run_race())),
+    ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
     // Prompt the user to select a function
