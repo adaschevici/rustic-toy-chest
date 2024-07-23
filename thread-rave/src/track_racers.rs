@@ -47,3 +47,39 @@ async fn run_race(
 
     winner.lock().unwrap().unwrap()
 }
+
+pub async fn run_race() {
+    let num_threads = 5;
+    let max_count = 100;
+
+    info!("Welcome to the Thread Race Game!");
+    info!(
+        "There are {} threads racing to complete their task.",
+        num_threads
+    );
+    info!(
+        "Place your bet on which thread will win (0-{}): ",
+        num_threads - 1
+    );
+    io::stdout().flush().unwrap();
+
+    let mut bet = String::new();
+    io::stdin()
+        .read_line(&mut bet)
+        .expect("Failed to read line");
+    let bet: usize = bet.trim().parse().expect("Please enter a valid number");
+
+    info!("Starting the race...");
+
+    let winner: Arc<Mutex<Option<usize>>> = Arc::new(Mutex::new(None));
+    let mp = Arc::new(MultiProgress::new());
+
+    let winner = run_race(winner, num_threads, max_count, mp);
+
+    info!("Thread {} wins the race!", winner);
+    if winner == bet {
+        info!("Congratulations! Your bet was correct!");
+    } else {
+        info!("Sorry, better luck next time.");
+    }
+}
