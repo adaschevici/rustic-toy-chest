@@ -6884,6 +6884,8 @@ dependencies = [
  "rand",
  "rayon",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
