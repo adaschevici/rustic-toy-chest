@@ -17,3 +17,33 @@ async fn thread_task(id: usize, max_count: u32, pb: Arc<ProgressBar>) -> usize {
 
     id
 }
+
+async fn run_race(
+    winner: Arc<Mutex<Option<usize>>>,
+    num_threads: usize,
+    max_count: u32,
+    mp: Arc<MultiProgress>,
+) -> usize {
+    (0..num_threads).into_par_iter().for_each(|id| {
+        let pb = mp.add(ProgressBar::new(max_count as u64));
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template(&format!(
+                    "[{{elapsed_precise}}] {{bar:40.cyan/blue}} Thread {}: {{pos}}/{{len}} {{msg}}",
+                    id
+                ))
+                .unwrap()
+                .progress_chars("##-"),
+        );
+
+        let pb = Arc::new(pb);
+        let result = thread_task(id, max_count, pb);
+
+        let mut winner_guard = winner.lock().unwrap();
+        if winner_guard.is_none() {
+            *winner_guard = Some(result);
+        }
+    });
+
+    winner.lock().unwrap().unwrap()
+}
