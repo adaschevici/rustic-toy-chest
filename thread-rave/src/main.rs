@@ -14,7 +14,10 @@ async fn main() {
                 info!("Running initial noop option");
             })
         }),
-        ("Run rayon race", || Box::pin(track_racers::run_race())),
+        (
+            "Run rayon race",
+            || Box::pin(track_racers::run_race_event()),
+        ),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
