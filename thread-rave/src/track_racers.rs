@@ -4,11 +4,10 @@ use rayon::prelude::*;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
-use tokio::io;
-use tokio::io::AsyncWriteExt;
+use std::{io, io::Write};
 use tracing::info;
 
-async fn thread_task(id: usize, max_count: u32, pb: Arc<ProgressBar>) -> usize {
+fn thread_task(id: usize, max_count: u32, pb: Arc<ProgressBar>) -> usize {
     let mut rng = rand::thread_rng();
     let delay = rng.gen_range(1..=50);
 
@@ -21,7 +20,7 @@ async fn thread_task(id: usize, max_count: u32, pb: Arc<ProgressBar>) -> usize {
     id
 }
 
-async fn run_race(
+fn run_race(
     winner: Arc<Mutex<Option<usize>>>,
     num_threads: usize,
     max_count: u32,
@@ -44,7 +43,7 @@ async fn run_race(
 
         let mut winner_guard = winner.lock().unwrap();
         if winner_guard.is_none() {
-            *winner_guard = Some(result.await);
+            *winner_guard = Some(result);
         }
     });
 
@@ -77,7 +76,7 @@ pub async fn run_race_event() {
     let winner: Arc<Mutex<Option<usize>>> = Arc::new(Mutex::new(None));
     let mp = Arc::new(MultiProgress::new());
 
-    let winner = run_race(winner, num_threads, max_count, mp).await;
+    let winner = run_race(winner, num_threads, max_count, mp);
 
     info!("Thread {} wins the race!", winner);
     if winner == bet {
