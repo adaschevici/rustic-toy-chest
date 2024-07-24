@@ -20,7 +20,7 @@ fn thread_task(id: usize, max_count: u32, pb: Arc<ProgressBar>) -> usize {
     id
 }
 
-fn run_race(
+async fn run_race(
     winner: Arc<Mutex<Option<usize>>>,
     num_threads: usize,
     max_count: u32,
@@ -76,7 +76,7 @@ pub async fn run_race_event() {
     let winner: Arc<Mutex<Option<usize>>> = Arc::new(Mutex::new(None));
     let mp = Arc::new(MultiProgress::new());
 
-    let winner = run_race(winner, num_threads, max_count, mp);
+    let winner = run_race(winner, num_threads, max_count, mp).await;
 
     info!("Thread {} wins the race!", winner);
     if winner == bet {
