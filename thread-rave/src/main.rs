@@ -1,36 +1,86 @@
-use futures::future::BoxFuture;
-use inquire::Select;
-use tracing::info;
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use rand::Rng;
+use rayon::prelude::*;
+use std::io::{self, Write};
+use std::sync::{Arc, Mutex};
+use std::thread;
+use std::time::Duration;
 
-mod track_racers;
+fn thread_task(id: usize, max_count: u32, pb: Arc<ProgressBar>) -> usize {
+    let mut rng = rand::thread_rng();
+    let delay = rng.gen_range(1..=50);
 
-#[tokio::main]
-async fn main() {
-    tracing_subscriber::fmt::init();
+    for _ in 0..max_count {
+        pb.inc(1);
+        thread::sleep(Duration::from_millis(delay as u64));
+    }
+    pb.finish_with_message("done");
 
-    let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
-        ("Run noop operation", || {
-            Box::pin(async {
-                info!("Running initial noop option");
-            })
-        }),
-        (
-            "Run rayon race",
-            || Box::pin(track_racers::run_race_event()),
-        ),
-    ];
-    let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
+    id
+}
 
-    // Prompt the user to select a function
-    let selected_function = Select::new("Choose a function to execute:", function_names.clone())
-        .with_starting_cursor(function_names.len() - 1)
-        .prompt()
-        .expect("Failed to read input");
+fn run_race(
+    winner: Arc<Mutex<Option<usize>>>,
+    num_threads: usize,
+    max_count: u32,
+    mp: Arc<MultiProgress>,
+) -> usize {
+    (0..num_threads).into_par_iter().for_each(|id| {
+        let pb = mp.add(ProgressBar::new(max_count as u64));
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template(&format!(
+                    "[{{elapsed_precise}}] {{bar:40.cyan/blue}} Thread {}: {{pos}}/{{len}} {{msg}}",
+                    id
+                ))
+                .unwrap()
+                .progress_chars("##-"),
+        );
 
-    // Find and execute the corresponding function
-    for (name, function) in functions {
-        if name == selected_function {
-            function().await;
+        let pb = Arc::new(pb);
+        let result = thread_task(id, max_count, pb);
+
+        let mut winner_guard = winner.lock().unwrap();
+        if winner_guard.is_none() {
+            *winner_guard = Some(result);
         }
+    });
+
+    winner.lock().unwrap().unwrap()
+}
+
+fn main() {
+    let num_threads = 5;
+    let max_count = 100;
+
+    println!("Welcome to the Thread Race Game!");
+    println!(
+        "There are {} threads racing to complete their task.",
+        num_threads
+    );
+    print!(
+        "Place your bet on which thread will win (0-{}): ",
+        num_threads - 1
+    );
+    io::stdout().flush().unwrap();
+
+    let mut bet = String::new();
+    io::stdin()
+        .read_line(&mut bet)
+        .expect("Failed to read line");
+    let bet: usize = bet.trim().parse().expect("Please enter a valid number");
+
+    println!("Starting the race...");
+
+    let winner: Arc<Mutex<Option<usize>>> = Arc::new(Mutex::new(None));
+    let mp = Arc::new(MultiProgress::new());
+
+    let winner = run_race(winner, num_threads, max_count, mp);
+
+    println!("Thread {} wins the race!", winner);
+    if winner == bet {
+        println!("Congratulations! Your bet was correct!");
+    } else {
+        println!("Sorry, better luck next time.");
     }
 }
