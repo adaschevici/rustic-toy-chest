@@ -2,6 +2,7 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod matrix_mul;
 mod parsum;
 mod rayon_custom_it;
 mod track_racers;
@@ -27,6 +28,9 @@ async fn main() {
         ("Run rayon parsort", || Box::pin(parsum::run_parsort())),
         ("Run rayon custom iterator", || {
             Box::pin(rayon_custom_it::iterate_in_chunks())
+        }),
+        ("Run rayon matrix multiplication", || {
+            Box::pin(matrix_mul::run_matrix_mul())
         }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
