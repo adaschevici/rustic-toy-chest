@@ -3,6 +3,7 @@ use inquire::Select;
 use tracing::info;
 
 mod matrix_mul;
+mod mrg_sort;
 mod parsum;
 mod rayon_custom_it;
 mod track_racers;
