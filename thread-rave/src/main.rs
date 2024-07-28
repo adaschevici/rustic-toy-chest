@@ -20,6 +20,9 @@ async fn main() {
             || Box::pin(track_racers::run_race_event()),
         ),
         ("Run rayon parsum", || Box::pin(parsum::run_parsum())),
+        ("Run rayon parsum map filter", || {
+            Box::pin(parsum::run_parsum_map_filter())
+        }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
