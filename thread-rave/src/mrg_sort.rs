@@ -54,7 +54,7 @@ fn merge<T: Ord + Clone>(left: Vec<T>, right: Vec<T>) -> Vec<T> {
     merged
 }
 
-async fn run_mrg_sort() {
+pub async fn run_mrg_sort() {
     let data = (0..1_000_000)
         .map(|_| rand::random::<i32>())
         .collect::<Vec<_>>();

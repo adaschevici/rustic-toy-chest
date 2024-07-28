@@ -33,6 +33,10 @@ async fn main() {
         ("Run rayon matrix multiplication", || {
             Box::pin(matrix_mul::run_matrix_mul())
         }),
+        (
+            "Run rayon merge sort",
+            || Box::pin(mrg_sort::run_mrg_sort()),
+        ),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
