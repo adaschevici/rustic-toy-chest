@@ -2,6 +2,7 @@ use futures::future::BoxFuture;
 use inquire::Select;
 use tracing::info;
 
+mod parsum;
 mod track_racers;
 
 #[tokio::main]
@@ -18,6 +19,7 @@ async fn main() {
             "Run rayon race",
             || Box::pin(track_racers::run_race_event()),
         ),
+        ("Run rayon parsum", || Box::pin(parsum::run_parsum())),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
