@@ -1,7 +1,7 @@
 use rayon::prelude::*;
 use tracing::info;
 
-fn parallel_map_filter(arr: &[i32]) -> Vec<i32> {
+async fn parallel_map_filter(arr: &[i32]) -> Vec<i32> {
     arr.par_iter()
         .map(|&x| x * 2)
         .filter(|&x| x % 2 == 0)
@@ -15,6 +15,6 @@ pub async fn run_parsum() {
 
 pub async fn run_parsum_map_filter() {
     let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    let result = parallel_map_filter(&arr);
+    let result = parallel_map_filter(&arr).await;
     info!("Result: {:?}", result);
 }
