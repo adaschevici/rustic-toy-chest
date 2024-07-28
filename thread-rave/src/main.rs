@@ -3,6 +3,7 @@ use inquire::Select;
 use tracing::info;
 
 mod parsum;
+mod rayon_custom_it;
 mod track_racers;
 
 #[tokio::main]
@@ -24,6 +25,9 @@ async fn main() {
             Box::pin(parsum::run_parsum_map_filter())
         }),
         ("Run rayon parsort", || Box::pin(parsum::run_parsort())),
+        ("Run rayon custom iterator", || {
+            Box::pin(rayon_custom_it::iterate_in_chunks())
+        }),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
