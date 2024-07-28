@@ -23,6 +23,7 @@ async fn main() {
         ("Run rayon parsum map filter", || {
             Box::pin(parsum::run_parsum_map_filter())
         }),
+        ("Run rayon parsort", || Box::pin(parsum::run_parsort())),
     ];
     let function_names: Vec<&str> = functions.iter().map(|(name, _)| *name).collect();
 
