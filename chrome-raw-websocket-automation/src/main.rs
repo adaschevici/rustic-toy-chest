@@ -100,6 +100,7 @@ async fn subscribe_to_event() {
     for target in target_infos {
         if let Some(url) = target["url"].as_str() {
             info!("Target URL: {}", url);
+            info!("Target ID: {}", target["targetId"]);
         } else {
             info!("No URL found for target");
         }
