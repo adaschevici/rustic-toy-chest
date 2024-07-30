@@ -1,4 +1,5 @@
 use reqwest::Client;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 struct Tab {
