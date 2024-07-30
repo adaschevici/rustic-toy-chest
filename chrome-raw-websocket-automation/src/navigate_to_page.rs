@@ -7,6 +7,7 @@ use url::Url;
 
 pub async fn navigate_to_page() {
     // Replace with the WebSocket URL of the Chrome browser.
+    // TODO: Need to make this dynamic because the ID is different every time chrome is launched
     let websocket_url = "ws://localhost:9222/devtools/page/F179AA99B5124885127674A3853BE659";
     let url = Url::parse(websocket_url).expect("Invalid WebSocket URL");
     info!("Connecting to {}", url);
