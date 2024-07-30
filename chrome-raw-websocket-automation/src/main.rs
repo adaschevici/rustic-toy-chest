@@ -70,7 +70,7 @@ async fn main() {
         ("Navigate to example.com", || {
             Box::pin(navigate_to_page::navigate_to_page(None))
         }),
-        ("List tabs", || Box::pin(get_tabs())),
+        ("List tabs", || Box::pin(map_tabs_to_struct::get_tabs())),
         ("Subscribe to event", || Box::pin(subscribe_to_event())),
     ];
 

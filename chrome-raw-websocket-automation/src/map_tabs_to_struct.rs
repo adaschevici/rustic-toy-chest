@@ -1,3 +1,5 @@
+use reqwest::Client;
+
 #[derive(Debug, Deserialize)]
 struct Tab {
     id: String,
@@ -6,7 +8,8 @@ struct Tab {
     #[serde(rename = "webSocketDebuggerUrl")]
     websocket_debugger_url: Option<String>,
 }
-async fn get_tabs() {
+
+pub async fn get_tabs() {
     // Connect to the WebSocket server
     let client = Client::new();
 
