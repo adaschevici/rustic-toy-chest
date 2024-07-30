@@ -13,14 +13,7 @@ use url::Url;
 
 mod navigate_to_page;
 
-#[derive(Debug, Deserialize)]
-struct Tab {
-    id: String,
-    title: String,
-    url: String,
-    #[serde(rename = "webSocketDebuggerUrl")]
-    websocket_debugger_url: Option<String>,
-}
+mod map_tabs_to_struct;
 
 async fn subscribe_to_event() {
     let websocket_url = "ws://127.0.0.1:9222/devtools/browser/443ae8d0-81a8-4340-8961-1f15d019ba76";
@@ -69,35 +62,13 @@ async fn subscribe_to_event() {
     }
 }
 
-async fn get_tabs() {
-    // Connect to the WebSocket server
-    let client = Client::new();
-
-    let tabs: Vec<Tab> = client
-        .get("http://localhost:9222/json")
-        .send()
-        .await
-        .expect("Failed to send request")
-        .json()
-        .await
-        .expect("Failed to parse JSON");
-
-    // Print the tab IDs and their URLs
-    for tab in tabs.iter() {
-        println!("Tab ID: {}, Title: {}, URL: {}", tab.id, tab.title, tab.url);
-        if let Some(ws_url) = &tab.websocket_debugger_url {
-            println!("WebSocket Debugger URL: {}", ws_url);
-        }
-    }
-}
-
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt().pretty().init();
     // Define the list of functions
     let functions: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
         ("Navigate to example.com", || {
-            Box::pin(navigate_to_page::navigate_to_page())
+            Box::pin(navigate_to_page::navigate_to_page(None))
         }),
         ("List tabs", || Box::pin(get_tabs())),
         ("Subscribe to event", || Box::pin(subscribe_to_event())),
